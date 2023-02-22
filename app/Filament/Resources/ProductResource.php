@@ -7,13 +7,17 @@ use App\Filament\Resources\ProductResource\RelationManagers;
 use App\Filament\Resources\TextInput\Mask;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\Select;
 use App\Models\Product;
+use App\Models\ProductColor;
+use App\Models\ProductType;
 use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ProductResource extends Resource
@@ -44,6 +48,16 @@ class ProductResource extends Resource
                     ->numeric()
                     ->required()
                     ->label("Existencia"),
+                Select::make('colorId')
+                    ->relationship('color', 'name')
+                    ->label('Color')
+                    ->options(ProductColor::all()->pluck('name', 'id'))
+                    ->searchable(),
+                Select::make('typeId')
+                    ->relationship('type', 'name')
+                    ->label('Tipo')
+                    ->options(ProductType::all()->pluck('name', 'id'))
+                    ->searchable(),
             ]);
     }
 
@@ -54,14 +68,21 @@ class ProductResource extends Resource
                 TextColumn::make('name')
                     ->label("Nombre")
                     ->searchable(['name']),
+                TextColumn::make('color_id')
+                    ->label('Color')
+                    ->getStateUsing(function (Model $record) {
+                        return $record->color->name;
+                    }),
+                TextColumn::make('type_id')
+                    ->label('Tipo')
+                    ->getStateUsing(function (Model $record) {
+                        return $record->type->name;
+                    }),
                 TextColumn::make('sale_price')
                     ->money('gtq', true)
                     ->label("Precio de Venta"),
                 TextColumn::make('existence')
                     ->label("Existencia"),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->label("Fecha de Creación"),
             ])
             ->filters([
                 //
