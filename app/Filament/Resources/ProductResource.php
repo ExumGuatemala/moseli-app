@@ -48,6 +48,25 @@ class ProductResource extends Resource
                     ->numeric()
                     ->required()
                     ->label("Existencia"),
+                Select::make('size')
+                    ->label('Talla')
+                    ->afterStateHydrated(function (Model|null $record, Select $component) {
+                        $record == null ? $component->state(null) : $component->state($record->size);
+                    })
+                    ->options([
+                        '2' => '2',
+                        '4' => '4',
+                        '6' => '6',
+                        '8' => '8',
+                        '10' => '10',
+                        '12' => '12',
+                        '14' => '14',
+                        'XS' => 'XS',
+                        'S' => 'S',
+                        'M' => 'M',
+                        'L' => 'L',
+                        'XL' => 'XL',
+                    ]),
                 Select::make('colorId')
                     ->relationship('color', 'name')
                     ->label('Color')
@@ -68,6 +87,11 @@ class ProductResource extends Resource
                 TextColumn::make('name')
                     ->label("Nombre")
                     ->searchable(['name']),
+                TextColumn::make('size')
+                    ->label('Talla')
+                    ->getStateUsing(function (Model $record) {
+                        return $record->size;
+                    }),
                 TextColumn::make('color_id')
                     ->label('Color')
                     ->getStateUsing(function (Model $record) {
