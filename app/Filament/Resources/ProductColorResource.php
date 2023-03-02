@@ -21,7 +21,7 @@ class ProductColorResource extends Resource
     protected static ?string $model = ProductColor::class;
 
     protected static ?string $navigationGroup = 'Administración';
-    protected static ?string $navigationIcon = 'heroicon-o-collection';
+    protected static ?string $navigationIcon = 'heroicon-o-color-swatch';
 
     protected static ?string $modelLabel = 'Color de Producto';
     protected static ?string $pluralModelLabel = 'Colores de Producto';
