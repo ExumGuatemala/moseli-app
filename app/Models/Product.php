@@ -14,15 +14,13 @@ class Product extends Model
         'existence',
         'order',
         'sale_price',
+        'size',
+        'colors',
     ];
 
-    /**
-     * Get the color for the product.
-     */
-    public function color()
-    {
-        return $this->belongsTo(ProductColor::class);
-    }
+    protected $casts = [
+        'colors' => 'array',
+    ];
 
     /**
      * Get the color for the product.

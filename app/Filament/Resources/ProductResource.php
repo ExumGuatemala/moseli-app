@@ -67,11 +67,10 @@ class ProductResource extends Resource
                         'L' => 'L',
                         'XL' => 'XL',
                     ]),
-                Select::make('colorId')
-                    ->relationship('color', 'name')
+                Select::make('colors')
+                    ->multiple()
                     ->label('Color')
-                    ->options(ProductColor::all()->pluck('name', 'id'))
-                    ->searchable(),
+                    ->options(ProductColor::all()->pluck('name', 'id')),
                 Select::make('typeId')
                     ->relationship('type', 'name')
                     ->label('Tipo')
@@ -91,11 +90,6 @@ class ProductResource extends Resource
                     ->label('Talla')
                     ->getStateUsing(function (Model $record) {
                         return $record->size;
-                    }),
-                TextColumn::make('color_id')
-                    ->label('Color')
-                    ->getStateUsing(function (Model $record) {
-                        return $record->color->name;
                     }),
                 TextColumn::make('type_id')
                     ->label('Tipo')
