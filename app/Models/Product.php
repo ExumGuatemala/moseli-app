@@ -16,11 +16,16 @@ class Product extends Model
         'sale_price',
         'size',
         'colors',
+        'has_embroidery',
+        'embroidery'
     ];
 
     protected $casts = [
         'colors' => 'array',
+        'has_embroidery' => 'boolean',
     ];
+
+
 
     /**
      * Get the color for the product.

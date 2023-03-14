@@ -5,7 +5,9 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers;
 use App\Filament\Resources\TextInput\Mask;
+use Closure;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Select;
 use App\Models\Product;
@@ -74,8 +76,17 @@ class ProductResource extends Resource
                 Select::make('typeId')
                     ->relationship('type', 'name')
                     ->label('Tipo')
+                    ->columnSpan('full')
                     ->options(ProductType::all()->pluck('name', 'id'))
                     ->searchable(),
+                Toggle::make('has_embroidery')->inline()
+                    ->label('Agregar bordado?')
+                    ->reactive(),
+                TextInput::make('embroidery')
+                    ->label('Texto de Bordado')
+                    ->hidden(
+                        fn (Closure $get): bool => $get('has_embroidery') == false
+                    ),
             ]);
     }
 
