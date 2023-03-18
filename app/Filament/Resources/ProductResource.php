@@ -18,6 +18,8 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -87,6 +89,11 @@ class ProductResource extends Resource
                     ->hidden(
                         fn (Closure $get): bool => $get('has_embroidery') == false
                     ),
+                SpatieMediaLibraryFileUpload::make('Imagenes')
+                    ->columnSpan('full')
+                    ->multiple()
+                    ->conversion('thumb')
+                    ->enableReordering(),
             ]);
     }
 
