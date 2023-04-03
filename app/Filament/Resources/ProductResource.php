@@ -93,7 +93,9 @@ class ProductResource extends Resource
                     ->columnSpan('full')
                     ->multiple()
                     ->conversion('thumb')
-                    ->enableReordering(),
+                    ->enableReordering()
+                    ->enableOpen()
+                    ->visibility('public'),
             ]);
     }
 
