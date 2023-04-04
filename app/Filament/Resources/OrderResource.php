@@ -7,6 +7,7 @@ use App\Filament\Resources\OrderResource\RelationManagers;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use App\Models\Order;
 use App\Models\OrderState;
 use App\Models\Client;
@@ -47,6 +48,10 @@ class OrderResource extends Resource
                     ->label('Estado')
                     ->options(OrderState::all()->pluck('name', 'id'))
                     ->relationship('state', 'name'),
+                Textarea::make('description')
+                    ->label('Descripción')
+                    ->columnSpan('full')
+                    ->rows(10),
                 TextInput::make('total')
                     ->default(0)
                     ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2)),

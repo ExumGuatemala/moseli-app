@@ -7,6 +7,7 @@ use App\Filament\Resources\ProductResource\RelationManagers;
 use App\Filament\Resources\TextInput\Mask;
 use Closure;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Select;
@@ -89,6 +90,10 @@ class ProductResource extends Resource
                     ->hidden(
                         fn (Closure $get): bool => $get('has_embroidery') == false
                     ),
+                Textarea::make('description')
+                    ->label('Descripción')
+                    ->columnSpan('full')
+                    ->rows(3),
                 SpatieMediaLibraryFileUpload::make('Imagenes')
                     ->columnSpan('full')
                     ->multiple()

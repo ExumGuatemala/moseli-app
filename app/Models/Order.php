@@ -13,6 +13,7 @@ class Order extends Model
         'total',
         'state_id',
         'client_id',
+        'description'
     ];
 
     /**

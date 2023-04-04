@@ -21,7 +21,8 @@ class Product extends Model implements HasMedia
         'size',
         'colors',
         'has_embroidery',
-        'embroidery'
+        'embroidery',
+        'description'
     ];
 
     protected $casts = [
