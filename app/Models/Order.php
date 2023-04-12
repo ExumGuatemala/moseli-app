@@ -11,6 +11,7 @@ class Order extends Model
 
     protected $fillable = [
         'total',
+        'balance',
         'state_id',
         'client_id',
         'description'
@@ -38,5 +39,13 @@ class Order extends Model
     public function products()
     {
         return $this->belongsToMany(Product::class, 'orders_products', 'order_id', 'product_id')->withPivot('quantity');
+    }
+
+    /**
+     * Get the payments for order.
+     */
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
     }
 }
