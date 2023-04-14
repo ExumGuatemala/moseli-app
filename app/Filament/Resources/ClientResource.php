@@ -38,27 +38,27 @@ class ClientResource extends Resource
             ->schema([
                 TextInput::make('name')
                     ->required()
-                    ->maxLength(255)
                     ->label("Nombre Completo")
                     ->columnSpan('full'),
                 TextInput::make('email')
                     ->email()
-                    ->maxLength(255)
                     ->label("Correo Electrónico"),
                 TextInput::make('key')
-                    ->maxLength(255)
-                    ->label("Código"),
+                    ->label("Código")
+                    ->disabled()
+                    ->afterStateHydrated(function (TextInput $component, $state) {
+                        if(!$state){
+                            $component->state(strtoupper(substr(bin2hex(random_bytes(ceil(8 / 2))), 0, 8)));
+                        }
+                    }),
                 TextInput::make('phone1')
                     ->tel()
                     ->required()
-                    ->maxLength(255)
                     ->label("Teléfono 1"),
                 TextInput::make('phone2')
                     ->tel()
-                    ->maxLength(255)
                     ->label("Teléfono 2"),
                 TextInput::make('address')
-                    ->required()
                     ->columnSpan('full')
                     ->label("Dirección"),
                 Select::make('departamentoId')
