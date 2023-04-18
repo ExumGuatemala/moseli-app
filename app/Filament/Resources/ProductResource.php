@@ -80,6 +80,7 @@ class ProductResource extends Resource
                     ->relationship('type', 'name')
                     ->label('Tipo')
                     ->columnSpan('full')
+                    ->required()
                     ->options(ProductType::all()->pluck('name', 'id'))
                     ->searchable(),
                 Toggle::make('has_embroidery')->inline()
