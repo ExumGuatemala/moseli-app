@@ -7,10 +7,6 @@ use App\Repositories\EloquentRepository;
 
 class OrderRepository extends EloquentRepository
 {
-    public function __construct(Order $model)
-    {
-        $this->model = $model;
-    }
 
     // public function all()
     // {
@@ -22,10 +18,10 @@ class OrderRepository extends EloquentRepository
     //     return Quote::find($id);
     // }
 
-    // public function get($id)
-    // {
-    //     return Quote::where('id', $id)->get();
-    // }
+    public function get($id)
+    {
+        return Order::where('id', $id)->get();
+    }
 
     // public function updateById(int $id, array $attributes): bool
     // {

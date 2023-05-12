@@ -33,12 +33,12 @@ class PaymentsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                TextColumn::make('amount')
-                    ->label('Monto')
-                    ->money('gtq', true),
-                TextColumn::make('created_at')
-                    ->label('Fecha de Pago')
-                    ->dateTime(),
+                // TextColumn::make('amount')
+                //     ->label('Monto')
+                //     ->money('gtq', true),
+                // TextColumn::make('created_at')
+                //     ->label('Fecha de Pago')
+                //     ->dateTime(),
 
             ])
             ->filters([

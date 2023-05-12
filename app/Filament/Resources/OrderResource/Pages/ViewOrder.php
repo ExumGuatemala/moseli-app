@@ -30,6 +30,7 @@ class ViewOrder extends ViewRecord
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $data['total'] = self::$orderService->updateTotal($data['id']);
+        //dd($data['total']);
         return $data;
     }
 

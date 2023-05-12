@@ -2,17 +2,22 @@
 
 namespace App\Services;
 
+use App\Models\Order;
+use App\Models\Product;
 use App\Repositories\OrderRepository;
+use App\Repositories\ProductRepository;
 use App\Repositories\OrdersProductsRepository;
 
 class OrderService
 {
     protected $orderRepository;
+    protected $productRepository;
     protected $ordersProductsRepository;
 
     public function __construct()
     {
         $this->orderRepository = new OrderRepository;
+        $this->productRepository = new ProductRepository;
         $this->ordersProductsRepository = new OrdersProductsRepository;
     }
 
@@ -23,7 +28,8 @@ class OrderService
         $products = $this->ordersProductsRepository->allForOrder($order->id);
         foreach($products as $product)
         {
-            $order->total += $product->sale_price * $product->quantity;
+            //dd($this->productRepository->get($product->id));
+            //$order->total += $this->productRepository->get($product->id)->sale_price * $product->quantity;
         }
         $order->save();
         return strval($order->total);

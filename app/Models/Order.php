@@ -34,7 +34,7 @@ class Order extends Model
     }
 
     /**
-     * The products that belong to the Quote.
+     * The products that belong to the Order.
      */
     public function products()
     {

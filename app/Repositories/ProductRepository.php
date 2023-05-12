@@ -2,29 +2,25 @@
 
 namespace App\Repositories;
 
-use App\Models\OrderProduct;
+use App\Models\Product;
 
-class OrdersProductsRepository extends EloquentRepository
+class ProductRepository extends EloquentRepository
 {
+
     // public function all()
     // {
     //     return Quote::all();
     // }
-
-    public function allForOrder($orderId)
-    {
-        return OrderProduct::where('order_id', $orderId)->get();
-    }
 
     // public function find(int $id)
     // {
     //     return Quote::find($id);
     // }
 
-    // public function get($id)
-    // {
-    //     return Quote::where('id', $id)->get();
-    // }
+    public function get($id)
+    {
+        return Product::where('id', $id)->get();
+    }
 
     // public function updateById(int $id, array $attributes): bool
     // {
