@@ -2,16 +2,10 @@
 
 namespace App\Repositories;
 
-use App\Models\Order;
-use App\Models\Payment;
-use App\Repositories\EloquentRepository;
+use App\Models\Product;
 
-class OrderRepository extends EloquentRepository
+class ProductRepository extends EloquentRepository
 {
-    public function __construct(Order $model)
-    {
-        $this->model = $model;
-    }
 
     // public function all()
     // {
@@ -25,11 +19,9 @@ class OrderRepository extends EloquentRepository
 
     public function get($id)
     {
-        return Order::where('id', $id)->get();
+        return Product::where('id', $id)->get();
     }
-    public function getOrders($order_id){
-        return Payment::where('order_id', $order_id)->get();
-    }
+
     // public function updateById(int $id, array $attributes): bool
     // {
     //     $obj = Quote::find($id);

@@ -12,6 +12,7 @@ use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Services\OrderService;
+
 class PaymentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'payments';
@@ -34,12 +35,14 @@ class PaymentsRelationManager extends RelationManager
     {
         return $table
             ->columns([
+
                 TextColumn::make('amount')
                     ->label('Monto')
                     ->money('gtq', true),
                 TextColumn::make('created_at')
                     ->label('Fecha de Pago')
                     ->dateTime(),
+
             ])
             ->filters([
                 //

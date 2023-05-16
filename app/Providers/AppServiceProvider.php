@@ -16,10 +16,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
+
         $this->app->bind(OrderRepository::class, function (Application $app) {
             return new OrderRepository($app->make(Order::class));
         });
-    }
+        }
 
     /**
      * Bootstrap any application services.

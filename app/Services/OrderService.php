@@ -10,7 +10,6 @@ class OrderService
 {
     protected $orderRepository;
     protected $ordersProductsRepository;
-    // const $order = new Order;
     public function __construct()
     {
         $this->orderRepository = new OrderRepository(new Order);
