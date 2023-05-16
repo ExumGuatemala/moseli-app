@@ -22,6 +22,7 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->decimal('total', 9, 2);
+            $table->decimal('balance', 9, 2)->nullable();
             $table->unsignedBigInteger('state_id')->nullable();
             $table->unsignedBigInteger('client_id')->nullable();
             $table->timestamps();
@@ -49,6 +50,7 @@ return new class extends Migration
      */
     public function down()
     {
+
         Schema::dropIfExists('orders_products');
         Schema::dropIfExists('orders');
         Schema::dropIfExists('order_states');

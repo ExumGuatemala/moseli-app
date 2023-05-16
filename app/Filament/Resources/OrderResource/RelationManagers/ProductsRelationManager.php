@@ -21,6 +21,7 @@ class ProductsRelationManager extends RelationManager
     protected static string $relationship = 'products';
 
     protected static ?string $recordTitleAttribute = 'name';
+    protected static ?string $navigationLabel = 'Pagos';
 
     public static function form(Form $form): Form
     {
@@ -63,14 +64,14 @@ class ProductsRelationManager extends RelationManager
                     ])
                     ->preloadRecordSelect()
                     ->after(function (RelationManager $livewire) {
-                        OrderService::addToTotal($livewire->ownerRecord, $livewire->mountedTableActionData['recordId'], $livewire->mountedTableActionData['quantity']);
+                        OrderService::updateTotal($livewire->ownerRecord->id);
                         $livewire->emit('refresh');
                     }),
             ])
             ->actions([
                 DetachAction::make()
-                    ->before(function (RelationManager $livewire) {
-                        OrderService::substractFromTotal($livewire->ownerRecord, $livewire->cachedMountedTableActionRecord['product_id'], $livewire->cachedMountedTableActionRecord['quantity']);
+                    ->after(function (RelationManager $livewire) {
+                        OrderService::updateTotal($livewire->ownerRecord->id);
                         $livewire->emit('refresh');
                     }),
             ])

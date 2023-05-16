@@ -48,13 +48,17 @@ class OrderResource extends Resource
                     ->label('Estado')
                     ->options(OrderState::all()->pluck('name', 'id'))
                     ->relationship('state', 'name'),
+                TextInput::make('total')
+                    ->default(0)
+                    ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2)),
+                TextInput::make('balance')
+                    ->default(0)
+                    ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2)),
+                    // ->hiddenOn('create'),
                 Textarea::make('description')
                     ->label('Descripción')
                     ->columnSpan('full')
                     ->rows(10),
-                TextInput::make('total')
-                    ->default(0)
-                    ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2)),
             ]);
     }
 
@@ -101,6 +105,7 @@ class OrderResource extends Resource
     {
         return [
             RelationManagers\ProductsRelationManager::class,
+            RelationManagers\PaymentsRelationManager::class,
         ];
     }
 
