@@ -65,6 +65,7 @@ class ProductsRelationManager extends RelationManager
                     ->preloadRecordSelect()
                     ->after(function (RelationManager $livewire) {
                         OrderService::updateTotal($livewire->ownerRecord->id);
+                        // OrderService::updateBalance($livewire->ownerRecord->id);
                         $livewire->emit('refresh');
                     }),
             ])
@@ -72,6 +73,7 @@ class ProductsRelationManager extends RelationManager
                 DetachAction::make()
                     ->after(function (RelationManager $livewire) {
                         OrderService::updateTotal($livewire->ownerRecord->id);
+                        // OrderService::updateBalance($livewire->ownerRecord->id);
                         $livewire->emit('refresh');
                     }),
             ])

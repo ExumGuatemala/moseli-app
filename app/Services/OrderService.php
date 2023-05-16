@@ -16,7 +16,7 @@ class OrderService
         $this->ordersProductsRepository = new OrdersProductsRepository(new Order);
     }
 
-    public function updateTotal($orderId): string
+    public static function updateTotal($orderId): string
     {
         $repo = new OrderRepository(new Order);
         $productrepo = new OrdersProductsRepository(new Order);
@@ -28,6 +28,7 @@ class OrderService
             $order->total += $product->sale_price * $product->pivot->quantity;
         }
         $order->save();
+        // self::updateBalance($orderId);
         return strval($order->total);
     }
 
@@ -39,11 +40,12 @@ class OrderService
         $order->balance = 0;
         
         $paymentsOrder = $repo->getOrders($orderId);
-        
+        $totalPayed = 0;
         foreach($paymentsOrder as $payment)
         {
-            $order->balance += $payment->amount;
+            $totalPayed += $payment->amount;
         }
+        $order->balance = $order->total - $totalPayed;
         
         $order->save();
         return strval($order->balance);
