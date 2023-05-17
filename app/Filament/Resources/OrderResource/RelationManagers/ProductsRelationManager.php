@@ -24,6 +24,11 @@ class ProductsRelationManager extends RelationManager
     protected static ?string $navigationLabel = 'Pagos';
     protected static ?string $pluralModelLabel = 'Productos';
 
+    protected static $orderService;
+
+    public function __construct() {
+        static::$orderService = new OrderService();
+    }
 
     public static function form(Form $form): Form
     {
@@ -71,8 +76,8 @@ class ProductsRelationManager extends RelationManager
                     ])
                     ->preloadRecordSelect()
                     ->after(function (RelationManager $livewire) {
-                        OrderService::updateTotal($livewire->ownerRecord->id);
-                        // OrderService::updateBalance($livewire->ownerRecord->id);
+                        self::$orderService->updateTotal($livewire->ownerRecord->id);
+                        // self::$orderService->updateBalance($livewire->ownerRecord->id);                        
                         $livewire->emit('refresh');
                     }),
             ])
@@ -83,8 +88,8 @@ class ProductsRelationManager extends RelationManager
     ->modalSubheading('Esta accion es permanente, desea continuar con la eliminación?')
     ->modalButton('Si, deseo quitarlo')
                     ->after(function (RelationManager $livewire) {
-                        OrderService::updateTotal($livewire->ownerRecord->id);
-                        // OrderService::updateBalance($livewire->ownerRecord->id);
+                        self::$orderService->updateTotal($livewire->ownerRecord->id);
+                        // self::$orderService->updateBalance($livewire->ownerRecord->id);                        
                         $livewire->emit('refresh');
                     }),
             ])

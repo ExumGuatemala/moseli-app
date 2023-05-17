@@ -21,6 +21,12 @@ class PaymentsRelationManager extends RelationManager
     protected static ?string $navigationLabel = 'Pagos';
     protected static ?string $pluralModelLabel = 'Pagos';
 
+    protected static $orderService;
+
+    public function __construct() {
+        static::$orderService = new OrderService();
+    }
+
 
     public static function form(Form $form): Form
     {
@@ -54,13 +60,12 @@ class PaymentsRelationManager extends RelationManager
                 ->label('Nuevo Pago')
                 ->modalHeading('Crear Nuevo Pago')
                 ->modalButton('Guardar')
-                // ->cancelButton('Cancelar')
                 ->mutateFormDataUsing(function (RelationManager $livewire, array $data) {
                     $data['order_id'] = $livewire->ownerRecord->id;
                     return $data;
                 })
                 ->after(function (RelationManager $livewire) {
-                        OrderService::updateBalance($livewire->ownerRecord->id);
+                    self::$orderService->updateBalance($livewire->ownerRecord->id); 
                         $livewire->emit('refresh');
                     }),
             ])
@@ -71,7 +76,7 @@ class PaymentsRelationManager extends RelationManager
     ->modalSubheading('Esta accion es permanente, desea continuar con la eliminación?')
     ->modalButton('Si, deseo eliminarlo')
                 ->after(function (RelationManager $livewire) {
-                        OrderService::updateBalance($livewire->ownerRecord->id);
+                    self::$orderService->updateBalance($livewire->ownerRecord->id);
                         $livewire->emit('refresh');
                     }),
             ])

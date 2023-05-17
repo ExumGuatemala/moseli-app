@@ -16,13 +16,11 @@ class OrderService
         $this->ordersProductsRepository = new OrdersProductsRepository(new Order);
     }
 
-    public static function updateTotal($orderId): string
+    public function updateTotal($orderId): string
     {
-        $repo = new OrderRepository(new Order);
-        $productrepo = new OrdersProductsRepository(new Order);
-        $order = $repo->get($orderId)[0];
+        $order = $this->orderRepository->get($orderId)[0];
         $order->total = 0;
-        $productsOrder = $productrepo->allForOrder($order->id);
+        $productsOrder = $this->ordersProductsRepository->allForOrder($order->id);
         foreach($productsOrder as $product)
         {
             $order->total += $product->sale_price * $product->pivot->quantity;
@@ -32,14 +30,13 @@ class OrderService
         return strval($order->total);
     }
 
-    public static function updateBalance($orderId): string
+    public function updateBalance($orderId): string
     {
-        $repo = new OrderRepository(new Order);
-        $order = $repo->get($orderId)[0];
+        $order = $this->orderRepository->get($orderId)[0];
         
         $order->balance = 0;
         
-        $paymentsOrder = $repo->getOrders($orderId);
+        $paymentsOrder = $this->orderRepository->getOrders($orderId);
         $totalPayed = 0;
         foreach($paymentsOrder as $payment)
         {
