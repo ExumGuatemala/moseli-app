@@ -31,6 +31,8 @@ class ClientResource extends Resource
     protected static ?string $modelLabel = 'Cliente';
     protected static ?string $pluralModelLabel = 'Clientes';
     protected static ?string $navigationLabel = 'Clientes';
+    // protected static ?string $modelButton = 'Nuevo cliente';
+
 
     public static function form(Form $form): Form
     {
@@ -112,9 +114,11 @@ class ClientResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make()->label("Ver")->modalHeading('Detalles De Cliente'),
+                Tables\Actions\EditAction::make()->label("Editar")->modalHeading('Editar Cliente'),
+                Tables\Actions\DeleteAction::make()->label('Eliminar')->modalHeading('Eliminar Cliente')
+                ->modalSubheading('Esta accion es permanente, desea continuar con la eliminación?')
+                ->modalButton('Si, deseo eliminarlo'),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),

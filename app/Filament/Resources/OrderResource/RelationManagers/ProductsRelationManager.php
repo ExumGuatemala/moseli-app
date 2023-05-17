@@ -22,6 +22,8 @@ class ProductsRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'name';
     protected static ?string $navigationLabel = 'Pagos';
+    protected static ?string $pluralModelLabel = 'Productos';
+
 
     public static function form(Form $form): Form
     {
@@ -56,9 +58,14 @@ class ProductsRelationManager extends RelationManager
             ])
             ->headerActions([
                 AttachAction::make()
+                ->label('Agregar Producto')
+                ->modalHeading('Agregar Producto')
+                ->modalButton('Guardar')
                     ->form(fn (AttachAction $action): array => [
                         $action->getRecordSelect(),
+
                         TextInput::make('quantity')
+                        ->label('Cantidad a comprar')
                             ->required()
                             ->default(1),
                     ])
@@ -71,6 +78,10 @@ class ProductsRelationManager extends RelationManager
             ])
             ->actions([
                 DetachAction::make()
+                ->label('Quitar')
+                ->modalHeading('Quitar de la orden')
+    ->modalSubheading('Esta accion es permanente, desea continuar con la eliminación?')
+    ->modalButton('Si, deseo quitarlo')
                     ->after(function (RelationManager $livewire) {
                         OrderService::updateTotal($livewire->ownerRecord->id);
                         // OrderService::updateBalance($livewire->ownerRecord->id);

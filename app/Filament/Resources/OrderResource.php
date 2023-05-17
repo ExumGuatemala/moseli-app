@@ -30,6 +30,8 @@ class OrderResource extends Resource
     protected static ?string $modelLabel = 'Orden';
     protected static ?string $pluralModelLabel = 'Ordenes';
     protected static ?string $navigationLabel = 'Ordenes';
+    protected static ?string $buttonLabel = 'Ordenes';
+
 
     public static function form(Form $form): Form
     {
@@ -93,9 +95,9 @@ class OrderResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make()->label('Ver'),
+                Tables\Actions\EditAction::make()->label('Editar'),
+                Tables\Actions\DeleteAction::make()->label('Eliminar'),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),

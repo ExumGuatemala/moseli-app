@@ -24,7 +24,9 @@ use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-
+use Filament\Resources\Concerns\Translatable;
+use Filament\Resources\Pages\ListRecords;
+// use ListRecords\Concerns\Translatable;
 class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
@@ -35,11 +37,14 @@ class ProductResource extends Resource
     protected static ?string $modelLabel = 'Producto';
     protected static ?string $pluralModelLabel = 'Productos';
     protected static ?string $navigationLabel = 'Productos';
-
+    protected static ?string $navigationButton = 'Productos';
+    
     public static function form(Form $form): Form
     {
+        
         return $form
-            ->schema([
+            ->schema(
+                [
                 TextInput::make('name')
                     ->required()
                     ->maxLength(255)
@@ -101,7 +106,8 @@ class ProductResource extends Resource
                     ->enableReordering()
                     ->enableOpen()
                     ->visibility('public'),
-            ]);
+            ])
+            ;
     }
 
     public static function table(Table $table): Table
@@ -131,9 +137,12 @@ class ProductResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                // Actions\LocaleSwitcher::make(),
+                Tables\Actions\ViewAction::make()->label('Ver')->modalHeading('Ver Detalles de Producto'),
+                Tables\Actions\EditAction::make()->label('Editar')->modalHeading('Editar Producto')->modalButton('Guardar Cambios'),
+                Tables\Actions\DeleteAction::make()->label('Eliminar')->modalHeading('Eliminar Producto')
+                ->modalSubheading('Esta accion es permanente, desea continuar con la eliminación?')
+                ->modalButton('Si, deseo eliminarlo'),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),

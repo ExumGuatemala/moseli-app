@@ -19,6 +19,8 @@ class PaymentsRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'amount';
     protected static ?string $navigationLabel = 'Pagos';
+    protected static ?string $pluralModelLabel = 'Pagos';
+
 
     public static function form(Form $form): Form
     {
@@ -34,8 +36,8 @@ class PaymentsRelationManager extends RelationManager
     public static function table(Table $table): Table
     {
         return $table
+        
             ->columns([
-
                 TextColumn::make('amount')
                     ->label('Monto')
                     ->money('gtq', true),
@@ -49,6 +51,10 @@ class PaymentsRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
+                ->label('Nuevo Pago')
+                ->modalHeading('Crear Nuevo Pago')
+                ->modalButton('Guardar')
+                // ->cancelButton('Cancelar')
                 ->mutateFormDataUsing(function (RelationManager $livewire, array $data) {
                     $data['order_id'] = $livewire->ownerRecord->id;
                     return $data;
@@ -59,7 +65,12 @@ class PaymentsRelationManager extends RelationManager
                     }),
             ])
             ->actions([
-                Tables\Actions\DeleteAction::make()->after(function (RelationManager $livewire) {
+                Tables\Actions\DeleteAction::make()
+                ->label('Eliminar')
+                ->modalHeading('Eliminar pago')
+    ->modalSubheading('Esta accion es permanente, desea continuar con la eliminación?')
+    ->modalButton('Si, deseo eliminarlo')
+                ->after(function (RelationManager $livewire) {
                         OrderService::updateBalance($livewire->ownerRecord->id);
                         $livewire->emit('refresh');
                     }),
