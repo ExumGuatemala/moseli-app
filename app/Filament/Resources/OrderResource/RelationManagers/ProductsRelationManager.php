@@ -68,9 +68,8 @@ class ProductsRelationManager extends RelationManager
                 ->modalButton('Guardar')
                     ->form(fn (AttachAction $action): array => [
                         $action->getRecordSelect(),
-
                         TextInput::make('quantity')
-                        ->label('Cantidad a comprar')
+                            ->label('Cantidad a comprar')
                             ->required()
                             ->default(1),
                     ])
@@ -83,10 +82,10 @@ class ProductsRelationManager extends RelationManager
             ])
             ->actions([
                 DetachAction::make()
-                ->label('Quitar')
-                ->modalHeading('Quitar de la orden')
-    ->modalSubheading('Esta accion es permanente, desea continuar con la eliminación?')
-    ->modalButton('Si, deseo quitarlo')
+                    ->label('Quitar')
+                    ->modalHeading('Quitar de la orden')
+                    ->modalSubheading('Esta accion es permanente, desea continuar con la eliminación?')
+                    ->modalButton('Si, deseo quitarlo')
                     ->after(function (RelationManager $livewire) {
                         self::$orderService->updateTotal($livewire->ownerRecord->id);
                         // self::$orderService->updateBalance($livewire->ownerRecord->id);                        

@@ -49,7 +49,13 @@ class ClientResource extends Resource
                     ->label("Correo Electrónico"),
                 TextInput::make('key')
                     ->maxLength(255)
-                    ->label("Código"),
+                    ->label("Código")
+                    ->disabled()
+                    ->afterStateHydrated(function (TextInput $component, $state) {
+                        if(!$state){
+                            $component->state(strtoupper(substr(bin2hex(random_bytes(ceil(8 / 2))), 0, 8)));
+                        }
+                    }),
                 TextInput::make('phone1')
                     ->tel()
                     ->required()
