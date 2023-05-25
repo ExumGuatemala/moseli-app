@@ -19,8 +19,8 @@ class EditOrder extends EditRecord
     protected function getActions(): array
     {
         return [
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make(),
+            Actions\ViewAction::make()->label('Ver detalles'),
+            Actions\DeleteAction::make()->label('Eliminar'),
         ];
     }
 }

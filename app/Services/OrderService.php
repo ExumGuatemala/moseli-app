@@ -2,26 +2,49 @@
 
 namespace App\Services;
 
+use App\Repositories\OrderRepository;
+use App\Repositories\OrdersProductsRepository;
 use App\Models\Order;
 use App\Models\Product;
-
 class OrderService
 {
-    public static function addToTotal(Order $order, $productId, $qty)
+    protected $orderRepository;
+    protected $ordersProductsRepository;
+    public function __construct()
     {
-        $product = Product::find($productId);
-        $total = $order->total;
-        $total = $total + (float)($product->sale_price * $qty);
-        $order->total = $total;
-        $order->save();
+        $this->orderRepository = new OrderRepository(new Order);
+        $this->ordersProductsRepository = new OrdersProductsRepository(new Order);
     }
 
-    public static function substractFromTotal(Order $order, $productId, $qty)
+    public function updateTotal($orderId): string
     {
-        $product = Product::find($productId);
-        $total = $order->total;
-        $total = $total - (float)($product->sale_price * $qty);
-        $order->total = $total;
+        $order = $this->orderRepository->get($orderId)[0];
+        $order->total = 0;
+        $productsOrder = $this->ordersProductsRepository->allForOrder($order->id);
+        foreach($productsOrder as $product)
+        {
+            $order->total += $product->sale_price * $product->pivot->quantity;
+        }
         $order->save();
+        // self::updateBalance($orderId);
+        return strval($order->total);
+    }
+
+    public function updateBalance($orderId): string
+    {
+        $order = $this->orderRepository->get($orderId)[0];
+        
+        $order->balance = 0;
+        
+        $paymentsOrder = $this->orderRepository->getOrders($orderId);
+        $totalPayed = 0;
+        foreach($paymentsOrder as $payment)
+        {
+            $totalPayed += $payment->amount;
+        }
+        $order->balance = $order->total - $totalPayed;
+        
+        $order->save();
+        return strval($order->balance);
     }
 }

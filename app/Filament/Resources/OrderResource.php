@@ -30,6 +30,8 @@ class OrderResource extends Resource
     protected static ?string $modelLabel = 'Orden';
     protected static ?string $pluralModelLabel = 'Ordenes';
     protected static ?string $navigationLabel = 'Ordenes';
+    protected static ?string $buttonLabel = 'Ordenes';
+
 
     public static function form(Form $form): Form
     {
@@ -48,13 +50,18 @@ class OrderResource extends Resource
                     ->label('Estado')
                     ->options(OrderState::all()->pluck('name', 'id'))
                     ->relationship('state', 'name'),
+                TextInput::make('total')
+                    ->default(0)
+                    ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2)),
+                TextInput::make('balance')
+                    ->default(0)
+                    ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2))
+                    ->hiddenOn('create'),
                 Textarea::make('description')
                     ->label('Descripción')
                     ->columnSpan('full')
                     ->rows(10),
-                TextInput::make('total')
-                    ->default(0)
-                    ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2)),
+                    
             ]);
     }
 
@@ -88,9 +95,9 @@ class OrderResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make()->label('Ver'),
+                Tables\Actions\EditAction::make()->label('Editar'),
+                Tables\Actions\DeleteAction::make()->label('Eliminar'),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
@@ -101,6 +108,7 @@ class OrderResource extends Resource
     {
         return [
             RelationManagers\ProductsRelationManager::class,
+            RelationManagers\PaymentsRelationManager::class,
         ];
     }
 

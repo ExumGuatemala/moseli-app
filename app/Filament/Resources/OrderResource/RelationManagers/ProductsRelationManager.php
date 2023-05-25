@@ -21,6 +21,14 @@ class ProductsRelationManager extends RelationManager
     protected static string $relationship = 'products';
 
     protected static ?string $recordTitleAttribute = 'name';
+    protected static ?string $navigationLabel = 'Pagos';
+    protected static ?string $pluralModelLabel = 'Productos';
+
+    protected static $orderService;
+
+    public function __construct() {
+        static::$orderService = new OrderService();
+    }
 
     public static function form(Form $form): Form
     {
@@ -55,22 +63,32 @@ class ProductsRelationManager extends RelationManager
             ])
             ->headerActions([
                 AttachAction::make()
+                ->label('Agregar Producto')
+                ->modalHeading('Agregar Producto')
+                ->modalButton('Guardar')
                     ->form(fn (AttachAction $action): array => [
                         $action->getRecordSelect(),
                         TextInput::make('quantity')
+                            ->label('Cantidad a comprar')
                             ->required()
                             ->default(1),
                     ])
                     ->preloadRecordSelect()
                     ->after(function (RelationManager $livewire) {
-                        OrderService::addToTotal($livewire->ownerRecord, $livewire->mountedTableActionData['recordId'], $livewire->mountedTableActionData['quantity']);
+                        self::$orderService->updateTotal($livewire->ownerRecord->id);
+                        // self::$orderService->updateBalance($livewire->ownerRecord->id);                        
                         $livewire->emit('refresh');
                     }),
             ])
             ->actions([
                 DetachAction::make()
-                    ->before(function (RelationManager $livewire) {
-                        OrderService::substractFromTotal($livewire->ownerRecord, $livewire->cachedMountedTableActionRecord['product_id'], $livewire->cachedMountedTableActionRecord['quantity']);
+                    ->label('Quitar')
+                    ->modalHeading('Quitar de la orden')
+                    ->modalSubheading('Esta accion es permanente, desea continuar con la eliminación?')
+                    ->modalButton('Si, deseo quitarlo')
+                    ->after(function (RelationManager $livewire) {
+                        self::$orderService->updateTotal($livewire->ownerRecord->id);
+                        // self::$orderService->updateBalance($livewire->ownerRecord->id);                        
                         $livewire->emit('refresh');
                     }),
             ])

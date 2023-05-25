@@ -31,6 +31,8 @@ class ClientResource extends Resource
     protected static ?string $modelLabel = 'Cliente';
     protected static ?string $pluralModelLabel = 'Clientes';
     protected static ?string $navigationLabel = 'Clientes';
+    // protected static ?string $modelButton = 'Nuevo cliente';
+
 
     public static function form(Form $form): Form
     {
@@ -38,12 +40,15 @@ class ClientResource extends Resource
             ->schema([
                 TextInput::make('name')
                     ->required()
+                    ->maxLength(255)
                     ->label("Nombre Completo")
                     ->columnSpan('full'),
                 TextInput::make('email')
                     ->email()
+                    ->maxLength(255)
                     ->label("Correo Electrónico"),
                 TextInput::make('key')
+                    ->maxLength(255)
                     ->label("Código")
                     ->disabled()
                     ->afterStateHydrated(function (TextInput $component, $state) {
@@ -54,11 +59,14 @@ class ClientResource extends Resource
                 TextInput::make('phone1')
                     ->tel()
                     ->required()
+                    ->maxLength(255)
                     ->label("Teléfono 1"),
                 TextInput::make('phone2')
                     ->tel()
+                    ->maxLength(255)
                     ->label("Teléfono 2"),
                 TextInput::make('address')
+                    ->required()
                     ->columnSpan('full')
                     ->label("Dirección"),
                 Select::make('departamentoId')
@@ -112,9 +120,11 @@ class ClientResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make()->label("Ver")->modalHeading('Detalles De Cliente'),
+                Tables\Actions\EditAction::make()->label("Editar")->modalHeading('Editar Cliente'),
+                Tables\Actions\DeleteAction::make()->label('Eliminar')->modalHeading('Eliminar Cliente')
+                ->modalSubheading('Esta accion es permanente, desea continuar con la eliminación?')
+                ->modalButton('Si, deseo eliminarlo'),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
