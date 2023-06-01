@@ -76,7 +76,7 @@ class ProductsRelationManager extends RelationManager
                     ->preloadRecordSelect()
                     ->after(function (RelationManager $livewire) {
                         self::$orderService->updateTotal($livewire->ownerRecord->id);
-                        // self::$orderService->updateBalance($livewire->ownerRecord->id);                        
+                        self::$orderService->updateBalance($livewire->ownerRecord->id);                        
                         $livewire->emit('refresh');
                     }),
             ])
@@ -88,7 +88,7 @@ class ProductsRelationManager extends RelationManager
                     ->modalButton('Si, deseo quitarlo')
                     ->after(function (RelationManager $livewire) {
                         self::$orderService->updateTotal($livewire->ownerRecord->id);
-                        // self::$orderService->updateBalance($livewire->ownerRecord->id);                        
+                        self::$orderService->updateBalance($livewire->ownerRecord->id);                        
                         $livewire->emit('refresh');
                     }),
             ])
