@@ -30,6 +30,10 @@ class OrderRepository extends EloquentRepository
     public function getOrders($order_id){
         return Payment::where('order_id', $order_id)->get();
     }
+
+    public function countByKey($key){
+        return Order::where('key', $key)->count();
+    }
     // public function updateById(int $id, array $attributes): bool
     // {
     //     $obj = Quote::find($id);

@@ -30,6 +30,20 @@ class OrderService
         return strval($order->total);
     }
 
+    public function setAKey($orderKey){
+        $result = $orderKey;
+        $is_new = false;
+        while (!$is_new){
+            if ($this->orderRepository->countByKey($result) == 0)
+            {
+                $is_new = true;
+            } else {
+                $result = strtoupper(substr(bin2hex(random_bytes(ceil(8 / 2))), 0, 8));
+            }
+        }
+        return $result;
+    }
+
     public function updateBalance($orderId): string
     {
         $order = $this->orderRepository->get($orderId)[0];
