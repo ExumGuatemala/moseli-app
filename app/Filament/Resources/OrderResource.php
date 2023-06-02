@@ -41,14 +41,16 @@ class OrderResource extends Resource
                     ->columnSpan('full')
                     ->searchable()
                     ->options(Client::all()->pluck('name', 'id'))
-                    ->relationship('client', 'name'),
+                    ->relationship('client', 'name')
+                    ->required(),
                 TextInput::make('created_at')
                     ->disabled()
                     ->label('Fecha de Creación'),
                 Select::make('stateId')
                     ->label('Estado')
                     ->options(OrderState::all()->pluck('name', 'id'))
-                    ->relationship('state', 'name'),
+                    ->relationship('state', 'name')
+                    ->required(),
                 TextInput::make('key')
                     ->label("Código")
                     ->disabled()
@@ -56,7 +58,7 @@ class OrderResource extends Resource
                         if(!$state){
                             $component->state(strtoupper(substr(bin2hex(random_bytes(ceil(8 / 2))), 0, 8)));
                         }
-                    }),
+                    }),                    
                 TextInput::make('total')
                     ->default(0)
                     ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2)),
