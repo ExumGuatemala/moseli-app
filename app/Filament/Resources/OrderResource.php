@@ -57,8 +57,7 @@ class OrderResource extends Resource
                     ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2)),
                 TextInput::make('balance')
                     ->default(0)
-                    ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2))
-                    ->hiddenOn('create'),
+                    ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2)),
                 Textarea::make('description')
                     ->label('Descripción')
                     ->columnSpan('full')
