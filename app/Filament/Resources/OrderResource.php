@@ -53,6 +53,7 @@ class OrderResource extends Resource
                     ->required(),
                 TextInput::make('key')
                     ->label("Código")
+                    ->columnSpan('full')
                     ->disabled()
                     ->afterStateHydrated(function (TextInput $component, $state) {
                         if(!$state){
@@ -81,6 +82,8 @@ class OrderResource extends Resource
                     ->getStateUsing(function (Model $record) {
                         return $record->state->name;
                     }),
+                TextColumn::make('key')
+                    ->label("Código"),
                 TextColumn::make('client_id')
                     ->label('Cliente')
                     ->searchable(query: function (Builder $query, string $search): Builder {
@@ -92,8 +95,7 @@ class OrderResource extends Resource
                     ->getStateUsing(function (Model $record) {
                         return $record->client->name;
                     }),
-                TextColumn::make('key')
-                    ->label("Código"),
+                
                 TextColumn::make('total')
                     ->money('gtq', true),
                 TextColumn::make('created_at')
