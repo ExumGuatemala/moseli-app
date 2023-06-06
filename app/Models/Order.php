@@ -14,7 +14,8 @@ class Order extends Model
         'balance',
         'state_id',
         'client_id',
-        'description'
+        'description',
+        'key'
     ];
 
     /**

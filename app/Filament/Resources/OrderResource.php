@@ -33,7 +33,7 @@ class OrderResource extends Resource
     protected static ?string $pluralModelLabel = 'Ordenes';
     protected static ?string $navigationLabel = 'Ordenes';
     protected static ?string $buttonLabel = 'Ordenes';
-
+    
     public static function form(Form $form): Form
     {
         return $form
@@ -53,18 +53,25 @@ class OrderResource extends Resource
                     ->options(OrderState::all()->pluck('name', 'id'))
                     ->relationship('state', 'name')
                     ->required(),
+                TextInput::make('key')
+                    ->label("Código")
+                    ->columnSpan('full')
+                    ->disabled()
+                    ->afterStateHydrated(function (TextInput $component, $state) {
+                        if(!$state){
+                            $component->state(strtoupper(substr(bin2hex(random_bytes(ceil(8 / 2))), 0, 8)));
+                        }
+                    }),                    
                 TextInput::make('total')
                     ->default(0)
                     ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2)),
                 TextInput::make('balance')
                     ->default(0)
-                    ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2))
-                    ->hiddenOn('create'),
+                    ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2)),
                 Textarea::make('description')
                     ->label('Descripción')
                     ->columnSpan('full')
                     ->rows(10),
-                    
             ]);
     }
 
@@ -77,6 +84,8 @@ class OrderResource extends Resource
                     ->getStateUsing(function (Model $record) {
                         return $record->state->name;
                     }),
+                TextColumn::make('key')
+                    ->label("Código"),
                 TextColumn::make('client_id')
                     ->label('Cliente')
                     ->searchable(query: function (Builder $query, string $search): Builder {
@@ -88,6 +97,7 @@ class OrderResource extends Resource
                     ->getStateUsing(function (Model $record) {
                         return $record->client->name;
                     }),
+                
                 TextColumn::make('total')
                     ->money('gtq', true),
                 TextColumn::make('created_at')
