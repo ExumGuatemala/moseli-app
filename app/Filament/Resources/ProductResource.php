@@ -86,6 +86,7 @@ class ProductResource extends Resource
                     ->label('Tipo')
                     ->columnSpan('full')
                     ->options(ProductType::all()->pluck('name', 'id'))
+                    ->required()
                     ->searchable(),
                 Toggle::make('has_embroidery')->inline()
                     ->label('Agregar bordado?')
