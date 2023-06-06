@@ -18,7 +18,9 @@ use Filament\Resources\Table;
 use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Tables\Actions\Action;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Services\OrderService;
 
 class OrderResource extends Resource
 {
@@ -31,7 +33,6 @@ class OrderResource extends Resource
     protected static ?string $pluralModelLabel = 'Ordenes';
     protected static ?string $navigationLabel = 'Ordenes';
     protected static ?string $buttonLabel = 'Ordenes';
-
 
     public static function form(Form $form): Form
     {
@@ -97,6 +98,19 @@ class OrderResource extends Resource
                 //
             ])
             ->actions([
+                Action::make("nextStatus")
+                    ->label(function (Model $record) {
+                        $orderService = new OrderService();
+                        return "Cambiar a " . $orderService->getNextOrderStatus($record->state_id)->name;
+                    })
+                    ->requiresConfirmation()
+                    ->modalHeading('Cambiar estado')
+                    ->modalSubheading('¿Seguro que desea cambiar al siguiente estado?')
+                    ->modalButton('Si, seguro')
+                    ->action(function (Model $record) {
+                        $orderService = new OrderService();
+                        $orderService->changeToNextOrderStatus($record->id, $record->state_id);
+                    }),
                 Tables\Actions\ViewAction::make()->label('Ver'),
                 Tables\Actions\EditAction::make()->label('Editar'),
                 Tables\Actions\DeleteAction::make()->label('Eliminar'),
