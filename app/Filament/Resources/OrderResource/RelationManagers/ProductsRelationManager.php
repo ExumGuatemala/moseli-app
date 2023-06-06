@@ -10,6 +10,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\AttachAction;
 use Filament\Tables\Actions\DetachAction;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables;
 use App\Services\OrderService;
 use Illuminate\Database\Eloquent\Builder;
@@ -76,11 +77,23 @@ class ProductsRelationManager extends RelationManager
                     ->preloadRecordSelect()
                     ->after(function (RelationManager $livewire) {
                         self::$orderService->updateTotal($livewire->ownerRecord->id);
-                        // self::$orderService->updateBalance($livewire->ownerRecord->id);                        
+                        self::$orderService->updateBalance($livewire->ownerRecord->id);                        
                         $livewire->emit('refresh');
                     }),
             ])
             ->actions([
+                EditAction::make()
+                    ->form(fn (EditAction $action): array => [
+                        TextInput::make('quantity')
+                            ->required()
+                            ->label('Cantidad')
+                            ->default(1),
+                    ])
+                    ->after(function (RelationManager $livewire) {
+                        self::$orderService->updateTotal($livewire->ownerRecord->id);
+                        self::$orderService->updateBalance($livewire->ownerRecord->id); 
+                        $livewire->emit('refresh');
+                    }),
                 DetachAction::make()
                     ->label('Quitar')
                     ->modalHeading('Quitar de la orden')
@@ -88,7 +101,7 @@ class ProductsRelationManager extends RelationManager
                     ->modalButton('Si, deseo quitarlo')
                     ->after(function (RelationManager $livewire) {
                         self::$orderService->updateTotal($livewire->ownerRecord->id);
-                        // self::$orderService->updateBalance($livewire->ownerRecord->id);                        
+                        self::$orderService->updateBalance($livewire->ownerRecord->id);                        
                         $livewire->emit('refresh');
                     }),
             ])
