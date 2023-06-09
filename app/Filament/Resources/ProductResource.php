@@ -2,15 +2,9 @@
 
 namespace App\Filament\Resources;
 
+use Closure;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers;
-use App\Filament\Resources\TextInput\Mask;
-use Closure;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\Select;
 use App\Models\Product;
 use App\Models\ProductColor;
 use App\Models\ProductType;
@@ -19,14 +13,17 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
+use App\Filament\Resources\TextInput\Mask;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Resources\Concerns\Translatable;
-use Filament\Resources\Pages\ListRecords;
-// use ListRecords\Concerns\Translatable;
+use Illuminate\Database\Eloquent\Model;
+
 class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
@@ -38,13 +35,11 @@ class ProductResource extends Resource
     protected static ?string $pluralModelLabel = 'Productos';
     protected static ?string $navigationLabel = 'Productos';
     protected static ?string $navigationButton = 'Productos';
-    
+
     public static function form(Form $form): Form
     {
-        
         return $form
-            ->schema(
-                [
+            ->schema([
                 TextInput::make('name')
                     ->required()
                     ->maxLength(255)
@@ -56,7 +51,6 @@ class ProductResource extends Resource
                     ->label("Precio de Venta"),
                 TextInput::make('existence')
                     ->numeric()
-                    ->required()
                     ->label("Existencia"),
                 Select::make('size')
                     ->label('Talla')
@@ -107,8 +101,7 @@ class ProductResource extends Resource
                     ->enableReordering()
                     ->enableOpen()
                     ->visibility('public'),
-            ])
-            ;
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -138,22 +131,37 @@ class ProductResource extends Resource
                 //
             ])
             ->actions([
-                // Actions\LocaleSwitcher::make(),
-                Tables\Actions\ViewAction::make()->label('Ver')->modalHeading('Ver Detalles de Producto'),
-                Tables\Actions\EditAction::make()->label('Editar')->modalHeading('Editar Producto')->modalButton('Guardar Cambios'),
-                Tables\Actions\DeleteAction::make()->label('Eliminar')->modalHeading('Eliminar Producto')
-                ->modalSubheading('Esta accion es permanente, desea continuar con la eliminación?')
-                ->modalButton('Si, deseo eliminarlo'),
+                Tables\Actions\ViewAction::make()
+                    ->label('Ver')
+                    ->modalHeading('Ver Detalles de Producto'),
+                Tables\Actions\EditAction::make()
+                    ->label('Editar')
+                    ->modalHeading('Editar Producto')  
+                    ->modalButton('Guardar Cambios'),
+                Tables\Actions\DeleteAction::make()
+                    ->label('Eliminar')->modalHeading('Eliminar Producto')
+                    ->modalSubheading('Esta accion es permanente, desea continuar con la eliminación?')
+                    ->modalButton('Si, deseo eliminarlo'),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
-
+    
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+    
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageProducts::route('/'),
+            'index' => Pages\ListProducts::route('/'),
+            'create' => Pages\CreateProduct::route('/create'),
+            'view' => Pages\ViewProduct::route('/{record}'),
+            'edit' => Pages\EditProduct::route('/{record}/edit'),
         ];
-    }
+    }    
 }

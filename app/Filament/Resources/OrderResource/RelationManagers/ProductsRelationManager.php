@@ -11,6 +11,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\AttachAction;
 use Filament\Tables\Actions\DetachAction;
 use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\Action;
 use Filament\Tables;
 use App\Services\OrderService;
 use Illuminate\Database\Eloquent\Builder;
@@ -82,6 +83,11 @@ class ProductsRelationManager extends RelationManager
                     }),
             ])
             ->actions([
+                Action::make("goToProduct")
+                    ->label("Ver Producto")
+                    ->action(function (Model $record) {
+                        redirect()->intended('/admin/products/'.str($record->id));
+                    }),
                 EditAction::make()
                     ->form(fn (EditAction $action): array => [
                         TextInput::make('quantity')
