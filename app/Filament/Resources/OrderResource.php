@@ -66,6 +66,7 @@ class OrderResource extends Resource
                     ->default(0)
                     ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2)),
                 TextInput::make('balance')
+                    ->label("Saldo")
                     ->default(0)
                     ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2)),
                 Textarea::make('description')
