@@ -35,6 +35,14 @@ class Order extends Model
     }
 
     /**
+     * Get the branch of the Order
+     */
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
+    /**
      * The products that belong to the Order.
      */
     public function products()
