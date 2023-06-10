@@ -10,6 +10,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use App\Models\Order;
 use App\Models\OrderState;
+use App\Models\Branch;
 use App\Models\Client;
 use Filament\Forms;
 use Filament\Resources\Form;
@@ -53,9 +54,13 @@ class OrderResource extends Resource
                     ->options(OrderState::all()->pluck('name', 'id'))
                     ->relationship('state', 'name')
                     ->required(),
+                Select::make('branchId')
+                    ->label('Sucursal')
+                    ->options(Branch::all()->pluck('name', 'id'))
+                    ->relationship('branch', 'name')
+                    ->required(),
                 TextInput::make('key')
                     ->label("Código")
-                    ->columnSpan('full')
                     ->disabled()
                     ->afterStateHydrated(function (TextInput $component, $state) {
                         if(!$state){
@@ -101,6 +106,11 @@ class OrderResource extends Resource
                 
                 TextColumn::make('total')
                     ->money('gtq', true),
+                TextColumn::make('branch_id')
+                    ->label('Sucursal')
+                    ->getStateUsing(function (Model $record) {
+                        return $record->branch->name;
+                    }),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->label('Fecha de Creación'),
