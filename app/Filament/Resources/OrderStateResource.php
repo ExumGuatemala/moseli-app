@@ -33,6 +33,9 @@ class OrderStateResource extends Resource
                 TextInput::make('name')
                     ->required()
                     ->label('Nombre'),
+                TextInput::make('process_order')
+                    ->label('Orden en Proceso')
+                    ->required(),
             ]);
     }
 
@@ -42,6 +45,8 @@ class OrderStateResource extends Resource
             ->columns([
                 TextColumn::make('name')
                     ->label('Nombre'),
+                TextColumn::make('process_order')
+                    ->label('Orden en Proceso'),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->label('Fecha de Creación'),

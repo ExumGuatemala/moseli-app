@@ -3,9 +3,11 @@
 namespace App\Filament\Resources\OrderResource\Pages;
 
 use App\Filament\Resources\OrderResource;
-use Filament\Pages\Actions;
+use Filament\Pages\Actions\EditAction;
+use Filament\Pages\Actions\Action;
 use Filament\Resources\Pages\ViewRecord;
 use App\Services\OrderService;
+use Illuminate\Database\Eloquent\Model;
 
 class ViewOrder extends ViewRecord
 {
@@ -36,7 +38,27 @@ class ViewOrder extends ViewRecord
     protected function getActions(): array
     {
         return [
-            Actions\EditAction::make()->label('Editar'),
+            EditAction::make()->label('Editar'),
+            Action::make("nextStatus")
+                ->label(function () {
+                    //$orderService = new OrderService();
+                    return "Cambiar a " . self::$orderService->getNextOrderStatus($this->record->state_id)->name;
+                })
+                ->requiresConfirmation()
+                ->modalHeading('Cambiar estado')
+                ->modalSubheading('¿Seguro que desea cambiar al siguiente estado?')
+                ->modalButton('Si, seguro')
+                ->action(function () {
+                    //$orderService = new OrderService();
+                    self::$orderService->changeToNextOrderStatus($this->record->id, $this->record->state_id);
+                    redirect()->intended('/admin/orders/'.str($this->record->id));
+                }),
         ];
+    }
+
+    //Custom Actions definition
+    public function moveToNextOrderStatus(): void
+    {
+        dd("next status");
     }
 }
