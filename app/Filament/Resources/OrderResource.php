@@ -91,7 +91,8 @@ class OrderResource extends Resource
                         return $record->client->name;
                     }),
                 TextColumn::make('key')
-                    ->label("Código"),
+                    ->label("Código")
+                    ->searchable(['key']),
                 TextColumn::make('total')
                     ->money('gtq', true),
                 TextColumn::make('created_at')
