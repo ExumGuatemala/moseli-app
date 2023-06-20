@@ -18,6 +18,8 @@ use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
@@ -134,8 +136,26 @@ class ProductResource extends Resource
                     ->label("Existencia"),
             ])
             ->filters([
-                //
-            ])
+                // Filter::make('is_xs')
+                //     ->query(fn (Builder $query): Builder => $query->where('size', 'XS'))
+                //     ->label('xs'),
+                    SelectFilter::make('size')
+                    ->label('Talla')
+                    ->options([
+                        '2' => '2',
+                        '4' => '4',
+                        '6' => '6',
+                        '8' => '8',
+                        '10' => '10',
+                        '12' => '12',
+                        '14' => '14',
+                        'XS' => 'XS',
+                        'S' => 'S',
+                        'M' => 'M',
+                        'L' => 'L',
+                        'XL' => 'XL',
+                    ]),
+                ])
             ->actions([
                 // Actions\LocaleSwitcher::make(),
                 Tables\Actions\ViewAction::make()->label('Ver')->modalHeading('Ver Detalles de Producto'),

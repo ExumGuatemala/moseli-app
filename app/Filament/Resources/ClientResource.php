@@ -118,7 +118,7 @@ class ClientResource extends Resource
                     ->label("Fecha de Creación"),
             ])
             ->filters([
-                //
+            //
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()->label("Ver")->modalHeading('Detalles De Cliente'),
