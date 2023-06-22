@@ -130,25 +130,10 @@ class ProductResource extends Resource
                     ->label("Existencia"),
             ])
             ->filters([
-                // Filter::make('is_xs')
-                //     ->query(fn (Builder $query): Builder => $query->where('size', 'XS'))
-                //     ->label('xs'),
-                    SelectFilter::make('size')
+                SelectFilter::make('type_id')
                     ->label('Talla')
-                    ->options([
-                        '2' => '2',
-                        '4' => '4',
-                        '6' => '6',
-                        '8' => '8',
-                        '10' => '10',
-                        '12' => '12',
-                        '14' => '14',
-                        'XS' => 'XS',
-                        'S' => 'S',
-                        'M' => 'M',
-                        'L' => 'L',
-                        'XL' => 'XL',
-                    ]),
+                    ->multiple()
+                    ->relationship('type','name'),
                 ])
             ->actions([
                 Tables\Actions\ViewAction::make()

@@ -121,11 +121,13 @@ class OrderResource extends Resource
             ->filters([
                 SelectFilter::make('client_id')
                 ->label('Clientes')
+                ->multiple()
                 ->options(
                     Client::get()->pluck('name', 'id')
                 ),
                 SelectFilter::make('state_id')
                 ->label('Estado')
+                ->multiple()
                 ->options(
                     OrderState::get()->pluck('name', 'id')
                 ),
