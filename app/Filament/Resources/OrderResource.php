@@ -17,6 +17,7 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Tables\Actions\Action;
@@ -103,7 +104,9 @@ class OrderResource extends Resource
                     ->getStateUsing(function (Model $record) {
                         return $record->client->name;
                     }),
-                
+                TextColumn::make('key')
+                    ->label("Código")
+                    ->searchable(['key']),
                 TextColumn::make('total')
                     ->money('gtq', true),
                 TextColumn::make('branch_id')
@@ -116,7 +119,18 @@ class OrderResource extends Resource
                     ->label('Fecha de Creación'),
             ])
             ->filters([
-                //
+                SelectFilter::make('client_id')
+                ->label('Clientes')
+                ->multiple()
+                ->options(
+                    Client::get()->pluck('name', 'id')
+                ),
+                SelectFilter::make('state_id')
+                ->label('Estado')
+                ->multiple()
+                ->options(
+                    OrderState::get()->pluck('name', 'id')
+                ),
             ])
             ->actions([
                 Action::make("nextStatus")

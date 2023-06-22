@@ -104,7 +104,8 @@ class ClientResource extends Resource
                     ->label("Nombre Completo")
                     ->searchable(['name']),
                 TextColumn::make('key')
-                    ->label("Código"),
+                    ->label("Código")
+                    ->searchable(['key']),
                 TextColumn::make('phone1')
                     ->label("Teléfono 1"),
                 TextColumn::make('email')
@@ -114,7 +115,7 @@ class ClientResource extends Resource
                     ->label("Fecha de Creación"),
             ])
             ->filters([
-                //
+            //
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()

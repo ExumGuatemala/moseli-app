@@ -12,6 +12,8 @@ use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
@@ -128,8 +130,11 @@ class ProductResource extends Resource
                     ->label("Existencia"),
             ])
             ->filters([
-                //
-            ])
+                SelectFilter::make('type_id')
+                    ->label('Talla')
+                    ->multiple()
+                    ->relationship('type','name'),
+                ])
             ->actions([
                 Tables\Actions\ViewAction::make()
                     ->label('Ver')
