@@ -4,26 +4,25 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ClientResource\Pages;
 use App\Filament\Resources\ClientResource\RelationManagers;
+use Filament\Forms;
+use Filament\Resources\Form;
+use Filament\Resources\Resource;
+use Filament\Resources\Table;
+use Filament\Tables;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
 use App\Models\Client;
 use App\Models\Departamento;
 use App\Models\Municipio;
-use Closure;
-use Filament\Forms;
-use Filament\Resources\Form;
-use Filament\Resources\Resource;
-use Filament\Resources\Table;
-use Filament\Tables;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Closure;
 
 class ClientResource extends Resource
 {
     protected static ?string $model = Client::class;
-
 
     protected static ?string $navigationGroup = 'Ventas';
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
@@ -31,8 +30,6 @@ class ClientResource extends Resource
     protected static ?string $modelLabel = 'Cliente';
     protected static ?string $pluralModelLabel = 'Clientes';
     protected static ?string $navigationLabel = 'Clientes';
-    // protected static ?string $modelButton = 'Nuevo cliente';
-
 
     public static function form(Form $form): Form
     {
@@ -121,21 +118,37 @@ class ClientResource extends Resource
             //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()->label("Ver")->modalHeading('Detalles De Cliente'),
-                Tables\Actions\EditAction::make()->label("Editar")->modalHeading('Editar Cliente'),
-                Tables\Actions\DeleteAction::make()->label('Eliminar')->modalHeading('Eliminar Cliente')
-                ->modalSubheading('Esta accion es permanente, desea continuar con la eliminación?')
-                ->modalButton('Si, deseo eliminarlo'),
+                Tables\Actions\ViewAction::make()
+                    ->label("Ver")
+                    ->modalHeading('Detalles De Cliente'),
+                Tables\Actions\EditAction::make()
+                    ->label("Editar")
+                    ->modalHeading('Editar Cliente'),
+                Tables\Actions\DeleteAction::make()
+                    ->label('Eliminar')
+                    ->modalHeading('Eliminar Cliente')
+                    ->modalSubheading('Esta accion es permanente, desea continuar con la eliminación?')
+                    ->modalButton('Si, deseo eliminarlo'),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
-
+    
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+    
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageClients::route('/'),
+            'index' => Pages\ListClients::route('/'),
+            'create' => Pages\CreateClient::route('/create'),
+            'view' => Pages\ViewClient::route('/{record}'),
+            'edit' => Pages\EditClient::route('/{record}/edit'),
         ];
-    }
+    }    
 }

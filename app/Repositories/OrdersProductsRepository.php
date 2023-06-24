@@ -25,10 +25,10 @@ class OrdersProductsRepository extends EloquentRepository
     //     return Quote::find($id);
     // }
 
-    public function get($id)
-    {
-        return Quote::where('id', $id)->get();
-    }
+    // public function get($id)
+    // {
+    //     return Quote::where('id', $id)->get();
+    // }
 
     // public function updateById(int $id, array $attributes): bool
     // {
