@@ -88,11 +88,6 @@ class ProductResource extends Resource
                 TextColumn::make('name')
                     ->label("Nombre")
                     ->searchable(['name']),
-                TextColumn::make('size')
-                    ->label('Talla')
-                    ->getStateUsing(function (Model $record) {
-                        return $record->size;
-                    }),
                 TextColumn::make('type_id')
                     ->label('Tipo')
                     ->getStateUsing(function (Model $record) {
