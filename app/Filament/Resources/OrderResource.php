@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+
 use App\Filament\Resources\OrderResource\Pages;
 use App\Filament\Resources\OrderResource\RelationManagers;
 use Filament\Forms\Components\TextInput;
@@ -14,12 +15,15 @@ use App\Models\Client;
 use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
+use Filament\Tables\Filters\Filter;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Repositories\OrderStateRepository;
+use App\Repositories\ProductRepository;
 
 class OrderResource extends Resource
 {
@@ -31,7 +35,7 @@ class OrderResource extends Resource
     protected static ?string $modelLabel = 'Orden';
     protected static ?string $pluralModelLabel = 'Ordenes';
     protected static ?string $navigationLabel = 'Ordenes';
-    protected static ?string $buttonLabel = 'Ordenes';
+    protected static ?string $buttonLabel = 'Ordenes'; 
     
     public static function form(Form $form): Form
     {
@@ -102,15 +106,20 @@ class OrderResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('client_id')
-                ->label('Clientes')
-                ->options(
-                    Client::get()->pluck('name', 'id')
-                ),
+                    ->label('Clientes')
+                    ->options(
+                        Client::get()->pluck('name', 'id')
+                    ),
                 SelectFilter::make('state_id')
-                ->label('Estado')
-                ->options(
-                    OrderState::get()->pluck('name', 'id')
-                ),
+                    ->label('Estado')
+                    ->multiple()
+                    ->options(
+                        OrderState::get()->pluck('name', 'id')
+                    ),
+                Filter::make('hola')
+                    ->label('No mostrar entregados')
+                    ->query(fn (Builder $query): Builder => $query->whereNot('state_id', OrderState::where('name', 'Entregado')->first()->id))
+                    ->default(true)
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()->label('Ver'),

@@ -100,7 +100,7 @@ class ProductResource extends Resource
                     ->label("Existencia"),
             ])
             ->filters([
-                SelectFilter::make('size')
+                SelectFilter::make('type_id')
                     ->label('Talla')
                     ->options([
                         '2' => '2',

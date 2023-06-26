@@ -39,4 +39,5 @@ class ViewOrder extends ViewRecord
             Actions\EditAction::make()->label('Editar'),
         ];
     }
+
 }
