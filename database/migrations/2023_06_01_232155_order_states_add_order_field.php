@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('orders', function (Blueprint $table) {
-            $table->string('key')->after('description')->nullable();
+        Schema::table('order_states', function (Blueprint $table) {
+            $table->integer('process_order')->nullable()->after('name');
         });
     }
 
@@ -25,8 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        // Schema::table('orders', function (Blueprint $table) {
-        //     $table->dropColumn('key');
-        // });
+        Schema::table('order_states', function (Blueprint $table) {
+            $table->dropColumn('process_order');
+        });
     }
 };

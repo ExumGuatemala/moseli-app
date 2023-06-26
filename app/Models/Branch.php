@@ -5,20 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OrderState extends Model
+class Branch extends Model
 {
     use HasFactory;
 
+    protected $table = "branches";
+
     protected $fillable = [
         'name',
-        'process_order'
+        'phone',
+        'address'
     ];
 
-    /**
-     * Get the Orders for any given state.
-     */
-    public function quotes()
+    public function orders()
     {
         return $this->hasMany(Order::class);
     }
+
 }

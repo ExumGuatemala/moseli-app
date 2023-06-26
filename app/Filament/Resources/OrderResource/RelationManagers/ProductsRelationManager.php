@@ -14,6 +14,8 @@ use Filament\Forms\Components\Select;
 use App\Models\ProductColor;
 use Filament\Forms\Components\Toggle;
 use Closure;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\Action;
 use Filament\Tables;
 use App\Services\OrderService;
 use Illuminate\Database\Eloquent\Builder;
@@ -175,6 +177,23 @@ class ProductsRelationManager extends RelationManager
                     }),
             ])
             ->actions([
+                Action::make("goToProduct")
+                    ->label("Ver Producto")
+                    ->action(function (Model $record) {
+                        redirect()->intended('/admin/products/'.str($record->id));
+                    }),
+                EditAction::make()
+                    ->form(fn (EditAction $action): array => [
+                        TextInput::make('quantity')
+                            ->required()
+                            ->label('Cantidad')
+                            ->default(1),
+                    ])
+                    ->after(function (RelationManager $livewire) {
+                        self::$orderService->updateTotal($livewire->ownerRecord->id);
+                        self::$orderService->updateBalance($livewire->ownerRecord->id); 
+                        $livewire->emit('refresh');
+                    }),
                 DetachAction::make()
                     ->label('Quitar')
                     ->modalHeading('Quitar de la orden')
