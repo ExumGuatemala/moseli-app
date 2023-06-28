@@ -54,29 +54,6 @@ class ProductResource extends Resource
                 TextInput::make('existence')
                     ->numeric()
                     ->label("Existencia"),
-                Select::make('size')
-                    ->label('Talla')
-                    ->afterStateHydrated(function (Model|null $record, Select $component) {
-                        $record == null ? $component->state(null) : $component->state($record->size);
-                    })
-                    ->options([
-                        '2' => '2',
-                        '4' => '4',
-                        '6' => '6',
-                        '8' => '8',
-                        '10' => '10',
-                        '12' => '12',
-                        '14' => '14',
-                        'XS' => 'XS',
-                        'S' => 'S',
-                        'M' => 'M',
-                        'L' => 'L',
-                        'XL' => 'XL',
-                    ]),
-                Select::make('colors')
-                    ->multiple()
-                    ->label('Color')
-                    ->options(ProductColor::all()->pluck('name', 'id')),
                 Select::make('typeId')
                     ->relationship('type', 'name')
                     ->label('Tipo')
@@ -84,14 +61,6 @@ class ProductResource extends Resource
                     ->options(ProductType::all()->pluck('name', 'id'))
                     ->required()
                     ->searchable(),
-                Toggle::make('has_embroidery')->inline()
-                    ->label('Agregar bordado?')
-                    ->reactive(),
-                TextInput::make('embroidery')
-                    ->label('Texto de Bordado')
-                    ->hidden(
-                        fn (Closure $get): bool => $get('has_embroidery') == false
-                    ),
                 Textarea::make('description')
                     ->label('Descripción')
                     ->columnSpan('full')
@@ -113,11 +82,6 @@ class ProductResource extends Resource
                 TextColumn::make('name')
                     ->label("Nombre")
                     ->searchable(['name']),
-                TextColumn::make('size')
-                    ->label('Talla')
-                    ->getStateUsing(function (Model $record) {
-                        return $record->size;
-                    }),
                 TextColumn::make('type_id')
                     ->label('Tipo')
                     ->getStateUsing(function (Model $record) {
