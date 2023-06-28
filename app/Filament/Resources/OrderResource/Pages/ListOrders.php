@@ -8,6 +8,8 @@ use Filament\Pages\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Order;
+use App\Models\OrderState;
+use App\Enums\OrderEnum;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\Client;
 
@@ -18,7 +20,8 @@ class ListOrders extends ListRecords
 
     protected function getTableQuery(): Builder
     {
-        return Order::query()->whereNot('state_id', 2);
+        $deliveredOrderStateId = OrderState::where('name', OrderEnum::DELIVERED)->get()[0]->id;
+        return Order::query()->whereNot('state_id', $deliveredOrderStateId);
     }
 
     protected function getActions(): array
