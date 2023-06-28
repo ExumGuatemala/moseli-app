@@ -26,4 +26,12 @@ class Client extends Model
     {
         return $this->belongsTo(Municipio::class);
     }
+
+    /**
+     * Get all the orders for the client.
+     */
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
 }
