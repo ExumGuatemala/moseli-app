@@ -134,10 +134,6 @@ class OrderResource extends Resource
                     ->options(
                         OrderState::get()->pluck('name', 'id')
                     ),
-                Filter::make('noEntregados')
-                    ->label('No mostrar entregados')
-                    ->query(fn (Builder $query): Builder => $query->whereNot('state_id', OrderState::where('name', 'Entregado')->first()->id))
-                    ->default(true)
             ])
             ->actions([
                 Action::make("nextStatus")

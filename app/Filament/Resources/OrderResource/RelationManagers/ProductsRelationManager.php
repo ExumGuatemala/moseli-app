@@ -27,7 +27,7 @@ class ProductsRelationManager extends RelationManager
     protected static string $relationship = 'products';
 
     protected static ?string $recordTitleAttribute = 'name';
-    protected static ?string $navigationLabel = 'Pagos';
+    protected static ?string $navigationLabel = 'Productos';
     protected static ?string $pluralModelLabel = 'Productos';
 
     protected static $orderService;

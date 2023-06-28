@@ -16,10 +16,10 @@ class ListOrders extends ListRecords
 {
     protected static string $resource = OrderResource::class;
 
-    // protected function getTableQuery(): Builder
-    // {
-    //     return Order::query()->whereNot('state_id', 2);
-    // }
+    protected function getTableQuery(): Builder
+    {
+        return Order::query()->whereNot('state_id', 2);
+    }
 
     protected function getActions(): array
     {
