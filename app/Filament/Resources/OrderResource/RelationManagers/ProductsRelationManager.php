@@ -88,21 +88,21 @@ class ProductsRelationManager extends RelationManager
                     ->label("Precio"),
                 TextColumn::make('quantity')
                     ->label("Cantidad"),
-                TextColumn::make('embroidery')
-                    ->label("bordado")
-                    ->wrap(),
                 TextColumn::make('colors')
-                    ->label("colores")
+                    ->label("Colores")
                     ->getStateUsing(function (Model $record): String {
                         $result = "";
                         foreach ($record->colors as $value) {
-                            $result = $result . ' '  . ProductColor::find($value)->name;
+                            $result = $result . ProductColor::find($value)->name . ', ';
                           }
                         return $result;
                     })
                     ->wrap(),
+                TextColumn::make('embroidery')
+                    ->label("Bordado")
+                    ->wrap(),
                 TextColumn::make('sublimate')
-                    ->label("sublimado")
+                    ->label("Sublimado")
                     ->wrap(),
                 TextColumn::make('subtotal')
                     ->money('gtq', true)
@@ -117,6 +117,8 @@ class ProductsRelationManager extends RelationManager
             ->headerActions([
                 AttachAction::make()
                 ->label('Agregar Producto')
+                ->slideOver()
+                ->modalWidth('4xl')
                 ->modalHeading('Agregar Producto')
                 ->modalButton('Guardar')
                     ->form(fn (AttachAction $action): array => [
@@ -183,12 +185,66 @@ class ProductsRelationManager extends RelationManager
                         redirect()->intended('/admin/products/'.str($record->id));
                     }),
                 EditAction::make()
+                    ->label('Editar Producto')
+                    ->slideOver()
+                    ->modalWidth('4xl')
+                    ->modalHeading('Editar Producto')
+                    ->modalButton('Guardar')
                     ->form(fn (EditAction $action): array => [
+                        TextInput::make('productName')
+                            ->label('Producto')
+                            ->disabled()
+                            ->afterStateHydrated(function (TextInput $component) use ($action) {
+                                $component->state($action->getRecordTitle());
+                            }),
                         TextInput::make('quantity')
+                            ->label('Cantidad a comprar')
                             ->required()
-                            ->label('Cantidad')
                             ->default(1),
+                        Select::make('size')
+                            ->label('Talla')
+                            ->afterStateHydrated(function (Model|null $record, Select $component) {
+                                $record == null ? $component->state(null) : $component->state($record->size);
+                            })
+                            ->options([
+                                '2' => '2',
+                                '4' => '4',
+                                '6' => '6',
+                                '8' => '8',
+                                '10' => '10',
+                                '12' => '12',
+                                '14' => '14',
+                                'XS' => 'XS',
+                                'S' => 'S',
+                                'M' => 'M',
+                                'L' => 'L',
+                                'XL' => 'XL',
+                            ]),
+                        Select::make('colors')
+                            ->multiple()
+                            ->label('Color')
+                            ->options(ProductColor::all()->pluck('name', 'id')),
+                        Toggle::make('has_embroidery')->inline()
+                            ->label('Agregar bordado?')
+                            ->reactive(),
+                        TextInput::make('embroidery')
+                            ->label('Texto de Bordado')
+                            ->hidden(
+                                fn (Closure $get): bool => $get('has_embroidery') == false
+                            ),
+                        Toggle::make('has_sublimate')->inline()
+                            ->label('Agregar sublimado?')
+                            ->reactive(),
+                        TextInput::make('sublimate')
+                            ->label('Texto de sublimado')
+                            ->hidden(
+                                fn (Closure $get): bool => $get('has_sublimate') == false
+                            ),
                     ])
+                    ->mutateFormDataUsing(function (array $data): array {
+                        $data['colors'] = json_encode($data['colors']);
+                        return $data;
+                    })
                     ->after(function (RelationManager $livewire) {
                         self::$orderService->updateTotal($livewire->ownerRecord->id);
                         self::$orderService->updateBalance($livewire->ownerRecord->id); 
