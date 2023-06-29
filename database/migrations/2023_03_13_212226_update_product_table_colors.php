@@ -28,8 +28,8 @@ return new class extends Migration
     public function down()
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->dropColumn('colors');
-            $table->unsignedBigInteger('color_id')->nullable()->after('size');
+            // $table->dropColumn('colors');
+            $table->unsignedBigInteger('color_id')->nullable();
             $table->foreign('color_id')->references('id')->on('product_colors');
         });
     }
