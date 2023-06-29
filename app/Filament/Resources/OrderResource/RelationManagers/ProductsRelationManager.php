@@ -92,9 +92,11 @@ class ProductsRelationManager extends RelationManager
                     ->label("Colores")
                     ->getStateUsing(function (Model $record): String {
                         $result = "";
-                        foreach ($record->colors as $value) {
-                            $result = $result . ProductColor::find($value)->name . ', ';
-                          }
+                        if($record->colors != null) {
+                            foreach ($record->colors as $value) {
+                                $result = $result . ProductColor::find($value)->name . ', ';
+                              }
+                        }
                         return $result;
                     })
                     ->wrap(),
