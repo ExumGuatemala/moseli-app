@@ -74,8 +74,11 @@ class ProductsRelationManager extends RelationManager
                 ->label('Agregar Producto')
                 ->modalHeading('Agregar Producto')
                 ->modalButton('Guardar')
-                    ->form(fn (AttachAction $action): array => [
-                        $action->getRecordSelect(),
+                    ->form(fn (AttachAction $action, array $data): array => [
+                        $action->getRecordSelect()
+                        ->reactive()
+                        // ->afterStateUpdated(fn ($state, callable $set) => $set('quantity', $state)),
+                        ->afterStateUpdated(fn ($state, callable $set) => dd($state)),
                         TextInput::make('quantity')
                             ->label('Cantidad a comprar')
                             ->required()
