@@ -27,8 +27,13 @@ class OrderProduct extends Model
         'has_sublimate' => 'boolean',
     ];
 
-    public function products()
+    public function product()
     {
-        return $this->belongsTo(Product::class, 'orders_products', 'order_id', 'product_id')->withPivot('quantity', 'sublimate','size','embroidery','has_embroidery','has_sublimate', 'colors');
+        return $this->belongsTo(Product::class);
+    }
+
+    public function orders()
+    {
+        return $this->belongsToMany(Order::class, 'orders_products', 'order_id', 'product_id');
     }
 }

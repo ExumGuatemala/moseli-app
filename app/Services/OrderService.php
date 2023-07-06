@@ -28,7 +28,7 @@ class OrderService
         $productsOrder = $this->ordersProductsRepository->allForOrder($order->id);
         foreach($productsOrder as $product)
         {
-            $order->total += $product->sale_price * $product->pivot->quantity;
+            $order->total += $product->sale_price * $product->quantity;
         }
         $order->save();
         // self::updateBalance($orderId);
