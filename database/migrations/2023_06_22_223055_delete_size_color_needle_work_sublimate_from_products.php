@@ -13,8 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('orders', function (Blueprint $table) {
-            $table->string('key')->after('description')->nullable();
+        Schema::table('products', function (Blueprint $table) {
+            $table->dropColumn('size');
+            $table->dropColumn('colors');
+            $table->dropColumn('has_embroidery');
+            $table->dropColumn('embroidery');
         });
     }
 
@@ -25,8 +28,8 @@ return new class extends Migration
      */
     public function down()
     {
-        // Schema::table('orders', function (Blueprint $table) {
-        //     $table->dropColumn('key');
+        // Schema::table('products', function (Blueprint $table) {
+        //     //
         // });
     }
 };
