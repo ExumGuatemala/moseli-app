@@ -9,10 +9,14 @@ use Filament\Resources\Table;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\AttachAction;
+// use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\Action;
+// use Filament\Pages\Actions\Action;
 use Filament\Tables\Actions\DetachAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables;
 use App\Services\OrderService;
+use App\Services\ProductOrderService;
 use App\Services\LogBookService;
 use App\Repositories\ProductRepository;
 use Illuminate\Database\Eloquent\Builder;
@@ -29,11 +33,13 @@ class ProductsRelationManager extends RelationManager
     protected static ?string $pluralModelLabel = 'Productos';
 
     protected static $orderService;
+    protected static $orderProductService;
     protected static $logBookService;
     protected static $productRepository;
 
     public function __construct() {
         static::$orderService = new OrderService();
+        static::$orderProductService = new ProductOrderService();
         static::$logBookService = new LogBookService();
         static::$productRepository = new ProductRepository();
     }
@@ -76,9 +82,9 @@ class ProductsRelationManager extends RelationManager
                 ->modalButton('Guardar')
                     ->form(fn (AttachAction $action, array $data): array => [
                         $action->getRecordSelect()
-                        ->reactive()
+                        ->reactive(),
                         // ->afterStateUpdated(fn ($state, callable $set) => $set('quantity', $state)),
-                        ->afterStateUpdated(fn ($state, callable $set) => dd($state)),
+                        // ->afterStateUpdated(fn ($state, callable $set) => dd($state)),
                         TextInput::make('quantity')
                             ->label('Cantidad a comprar')
                             ->required()
@@ -100,6 +106,17 @@ class ProductsRelationManager extends RelationManager
                     self::$logBookService->saveEvent($livewire->ownerRecord->id, "App\Models\Order",Auth::user()->id, "Se editó el producto = ".$livewire->mountedTableActionData["name"]." en la orden con el codigo = ".$livewire->ownerRecord->key);                                         
                     $livewire->emit('refresh');
                 }),
+                // Tables\Actions\DissociateAction::make('holi'),
+                Action::make('xd')
+                    ->label("borrar bien")
+                    ->action(function (Model $record,RelationManager $livewire, array $data) {
+                        $data = $record;
+                        dd($data);
+                        
+                        // dd($livewire->ownerRecord->products);
+                        // dd(self::$orderProductService->deleteOrderProductByProductId($order_id, $product_id, $quantity));
+                        
+                    }),
                 DetachAction::make()
                     ->label('Quitar')
                     ->modalHeading('Quitar de la orden')
@@ -115,6 +132,7 @@ class ProductsRelationManager extends RelationManager
                     }),
             ])
             ->bulkActions([
+                Tables\Actions\DissociateBulkAction::make(),
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
