@@ -18,9 +18,12 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\Action;
 use Filament\Tables;
 use App\Services\OrderService;
+use App\Services\LogBookService;
+use App\Repositories\ProductRepository;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class ProductsRelationManager extends RelationManager
 {
@@ -31,9 +34,13 @@ class ProductsRelationManager extends RelationManager
     protected static ?string $pluralModelLabel = 'Productos';
 
     protected static $orderService;
+    protected static $logBookService;
+    protected static $productRepository;
 
     public function __construct() {
         static::$orderService = new OrderService();
+        static::$logBookService = new LogBookService();
+        static::$productRepository = new ProductRepository();
     }
 
     public static function form(Form $form): Form
@@ -176,7 +183,8 @@ class ProductsRelationManager extends RelationManager
                     ->preloadRecordSelect()
                     ->after(function (RelationManager $livewire) {  
                         self::$orderService->updateTotal($livewire->ownerRecord->id);
-                        self::$orderService->updateBalance($livewire->ownerRecord->id);                        
+                        self::$orderService->updateBalance($livewire->ownerRecord->id);
+                        self::$logBookService->saveEvent($livewire->ownerRecord->id, "App\Models\Order",Auth::user()->id, "Se agregó el producto = ".self::$productRepository->getOne($livewire->mountedTableActionData["recordId"])." en la orden con el codigo = ".$livewire->ownerRecord->key);                                         
                         $livewire->emit('refresh');
                     }),
             ])
@@ -250,16 +258,21 @@ class ProductsRelationManager extends RelationManager
                     ->after(function (RelationManager $livewire) {
                         self::$orderService->updateTotal($livewire->ownerRecord->id);
                         self::$orderService->updateBalance($livewire->ownerRecord->id); 
+                        self::$logBookService->saveEvent($livewire->ownerRecord->id, "App\Models\Order",Auth::user()->id, "Se editó el producto = ".$livewire->mountedTableActionData["name"]." en la orden con el codigo = ".$livewire->ownerRecord->key);                                         
                         $livewire->emit('refresh');
                     }),
+
                 DetachAction::make()
                     ->label('Quitar')
                     ->modalHeading('Quitar de la orden')
                     ->modalSubheading('Esta accion es permanente, desea continuar con la eliminación?')
                     ->modalButton('Si, deseo quitarlo')
+                    ->before(function (RelationManager $livewire, Model $record) {
+                        self::$logBookService->saveEvent($livewire->ownerRecord->id, "App\Models\Order",Auth::user()->id, "Se eliminó el producto = ".$record->name." en la orden con el codigo = ".$livewire->ownerRecord->key);                                         
+                    })
                     ->after(function (RelationManager $livewire) {
                         self::$orderService->updateTotal($livewire->ownerRecord->id);
-                        self::$orderService->updateBalance($livewire->ownerRecord->id);                        
+                        self::$orderService->updateBalance($livewire->ownerRecord->id);
                         $livewire->emit('refresh');
                     }),
             ])

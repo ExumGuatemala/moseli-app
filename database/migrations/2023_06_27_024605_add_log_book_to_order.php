@@ -13,9 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('products', function (Blueprint $table) {
-            $table->string('has_embroidery')->nullable();
-            $table->string('embroidery')->nullable();
+        Schema::table('logbook', function (Blueprint $table) {
+            // $table->foreign('model_id')->references('id')->on('orders');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 
@@ -26,9 +26,9 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('products', function (Blueprint $table) {
-            // $table->dropColumn('embroidery');
-            // $table->dropColumn('has_embroidery');
+        Schema::table('logbook', function (Blueprint $table) {
+            $table->dropColumn('user_id');
+            
         });
     }
 };

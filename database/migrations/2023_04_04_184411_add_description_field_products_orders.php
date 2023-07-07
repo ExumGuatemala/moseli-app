@@ -14,10 +14,12 @@ return new class extends Migration
     public function up()
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->string('description')->nullable()->after('embroidery');
+            $table->string('description')->nullable();
+            // $table->string('description')->nullable()->after('embroidery');
         });
 
         Schema::table('orders', function (Blueprint $table) {
+            // $table->string('description')->nullable()->after('total');
             $table->string('description')->nullable()->after('total');
         });
     }

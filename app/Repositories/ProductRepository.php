@@ -21,6 +21,10 @@ class ProductRepository extends EloquentRepository
     {
         return Product::where('id', $id)->get();
     }
+    public function getOne($id)
+    {
+        return Product::where('id', $id)->first()->name;
+    }
 
     // public function updateById(int $id, array $attributes): bool
     // {

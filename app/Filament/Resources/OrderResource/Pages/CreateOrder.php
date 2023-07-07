@@ -19,5 +19,4 @@ class CreateOrder extends CreateRecord
         $data['key'] = self::$orderService->setAKey($data['key']);
         return $data;
     }
-
 }

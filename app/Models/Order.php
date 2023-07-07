@@ -64,4 +64,12 @@ class Order extends Model
     {
         return $this->hasMany(Payment::class);
     }
+
+    /**
+     * Get the logbooks for order.
+     */
+    public function logbooks()
+    {
+        return $this->belongsToMany(LogBook::class, 'logbook', 'id', 'model_id');
+    }
 }

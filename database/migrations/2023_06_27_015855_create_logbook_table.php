@@ -13,9 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('products', function (Blueprint $table) {
-            $table->string('has_embroidery')->nullable();
-            $table->string('embroidery')->nullable();
+        Schema::create('logbook', function (Blueprint $table) {
+            $table->id();
+            $table->string('type');
+            $table->text('description');
+            $table->unsignedBigInteger('model_id');
+            $table->unsignedBigInteger('user_id');
+            $table->timestamps();
         });
     }
 
@@ -26,9 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('products', function (Blueprint $table) {
-            // $table->dropColumn('embroidery');
-            // $table->dropColumn('has_embroidery');
-        });
+        Schema::dropIfExists('logbook');
     }
 };
