@@ -27,17 +27,26 @@ class OrderRepository extends EloquentRepository
     {
         return Order::where('id', $id)->get();
     }
+
     public function getOrders($order_id){
         return Payment::where('order_id', $order_id)->get();
+    }
+
+    public function countByKey($key){
+        return Order::where('key', $key)->count();
     }
     // public function updateById(int $id, array $attributes): bool
     // {
     //     $obj = Quote::find($id);
 
-    //     foreach ($attributes as $key => $value) {
-    //         $obj->{$key} = $value;
-    //     }
+    public function updateById(int $id, array $attributes): bool
+    {
+        $obj = $this->model->find($id);
 
-    //     return $obj->save();
-    // }
+        foreach ($attributes as $key => $value) {
+            $obj->{$key} = $value;
+        }
+
+        return $obj->save();
+    }
 }

@@ -12,14 +12,23 @@ class OrderProduct extends Model
     protected $fillable = [
         'order_id',
         'product_id',
+        'size',
+        'colors',
+        'has_embroidery',
+        'embroidery',
+        'has_sublimate',
+        'sublimate',
         'quantity'
+    ];
+
+    protected $casts = [
+        'colors' => 'array',
+        'has_embroidery' => 'boolean',
+        'has_sublimate' => 'boolean',
     ];
 
     public function products()
     {
-        return $this->belongsTo(Product::class, 'orders_products', 'order_id', 'product_id')->withPivot('quantity');
+        return $this->belongsTo(Product::class, 'orders_products', 'order_id', 'product_id')->withPivot('quantity', 'sublimate','size','embroidery','has_embroidery','has_sublimate', 'colors');
     }
-
-
-
 }
