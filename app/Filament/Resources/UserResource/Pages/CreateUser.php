@@ -23,8 +23,4 @@ class CreateUser extends CreateRecord
         $data['password'] = Hash::make($password);
         return $data;
     }
-    protected function afterCreate(): void
-    {
-        self::$modelRoleService->saveModelRoles(2, $this->record->id);
-    }
 }
