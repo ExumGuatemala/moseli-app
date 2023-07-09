@@ -4,16 +4,9 @@ namespace App\Filament\Resources\ProductTypeResource\Pages;
 
 use App\Filament\Resources\ProductTypeResource;
 use Filament\Pages\Actions;
-use Filament\Resources\Pages\ManageRecords;
+use Filament\Resources\Pages\CreateRecord;
 
-class ManageProductTypes extends ManageRecords
+class CreateProductType extends CreateRecord
 {
     protected static string $resource = ProductTypeResource::class;
-
-    protected function getActions(): array
-    {
-        return [
-            Actions\CreateAction::make(),
-        ];
-    }
 }

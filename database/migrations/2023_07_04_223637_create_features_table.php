@@ -15,7 +15,14 @@ return new class extends Migration
     {
         Schema::create('features', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->integer('length');
+            $table->decimal('price', 9, 2);
+            $table->string('corsize');
+            $table->unsignedBigInteger('product_types_id');
             $table->timestamps();
+
+            $table->foreign('product_types_id')->references('id')->on('product_types');
         });
     }
 

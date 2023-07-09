@@ -63,10 +63,20 @@ class ProductTypeResource extends Resource
             ]);
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            RelationManagers\FeatureRelationManager::class,
+            
+        ];
+    }
+    
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageProductTypes::route('/'),
+            'index' => Pages\ListProductTypes::route('/'),
+            'create' => Pages\CreateProductType::route('/create'),
+            'edit' => Pages\EditProductType::route('/{record}/edit'),
         ];
-    }
+    }    
 }
