@@ -18,7 +18,7 @@ class Product extends Model implements HasMedia
         'existence',
         'order',
         'sale_price',
-        'size',
+        // 'size',
         'colors',
         'has_embroidery',
         'embroidery',
@@ -27,6 +27,7 @@ class Product extends Model implements HasMedia
 
     protected $casts = [
         'colors' => 'array',
+        'features' => 'array',
         'has_embroidery' => 'boolean',
     ];
 
@@ -38,6 +39,11 @@ class Product extends Model implements HasMedia
     public function type()
     {
         return $this->belongsTo(ProductType::class);
+    }
+
+    public function features()
+    {
+        return $this->type()->features();
     }
 
     /**

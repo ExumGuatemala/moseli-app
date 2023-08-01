@@ -11,7 +11,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\Select;
 use App\Filament\Resources\TextInput\Mask;
+use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Repeater;
+use Illuminate\Database\Eloquent\Model;
+use App\Services\SizeService;
 
 
 class FeatureRelationManager extends RelationManager
@@ -23,36 +27,50 @@ class FeatureRelationManager extends RelationManager
     protected static ?string $pluralModelLabel = 'Caracteristicas';
     protected static ?string $navigationLabel = 'Caracteristicas';
 
+    protected static $sizeService;
+
+    public function __construct() {
+        static::$sizeService = new SizeService();
+    }
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label('Nombre')
+                    ->columnSpan('full')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('length')
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('price')
-                    ->required()
-                    ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2))
-                    ->label("Precio de Venta"),
-                Select::make('corsize')
-                    ->label('Talla')
-                    ->options([
-                        '2' => '2',
-                        '4' => '4',
-                        '6' => '6',
-                        '8' => '8',
-                        '10' => '10',
-                        '12' => '12',
-                        '14' => '14',
-                        'XS' => 'XS',
-                        'S' => 'S',
-                        'M' => 'M',
-                        'L' => 'L',
-                        'XL' => 'XL',
-                    ]),
+                Repeater::make('sizes')
+                    ->relationship()
+                    ->label("Tallas")
+                    ->schema([
+                        Select::make('name')
+                            ->label('Talla')
+                            ->options([
+                                '2' => '2',
+                                '4' => '4',
+                                '6' => '6',
+                                '8' => '8',
+                                '10' => '10',
+                                '12' => '12',
+                                '14' => '14',
+                                'XS' => 'XS',
+                                'S' => 'S',
+                                'M' => 'M',
+                                'L' => 'L',
+                                'XL' => 'XL',
+                            ]),
+                        TextInput::make('length')
+                            ->label('Tamaño (en cm)'),
+
+                    ])
+                    ->itemLabel("talla")
+                    // ->orderable()
+                    ->columnSpan('full')
+                    ->createItemButtonLabel('Añadir una talla')
+                    ->columns(1)
+                    ->defaultItems(1)
             ]);
     }
 
@@ -77,7 +95,7 @@ class FeatureRelationManager extends RelationManager
                 ->before(function (array $data, RelationManager $livewire) {
                     $data['product_types_id'] = $livewire->ownerRecord->id;
                     return $data;
-                }),
+                })
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

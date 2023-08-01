@@ -18,6 +18,9 @@ class ProductType extends Model
     public function features()
     {
         return $this->hasMany(Feature::class, 'product_types_id');
-        // return $this->belongsTo(Product::class, 'orders_products', 'order_id', 'product_id')->withPivot('quantity');
+    }
+    public function size_prices()
+    {
+        return $this->hasMany(SizePrice::class, 'product_type_id');
     }
 }

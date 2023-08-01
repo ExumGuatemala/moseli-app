@@ -67,6 +67,7 @@ class ProductTypeResource extends Resource
     {
         return [
             RelationManagers\FeatureRelationManager::class,
+            RelationManagers\SizePriceRelationManager::class,
             
         ];
     }

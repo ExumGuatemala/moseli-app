@@ -12,7 +12,14 @@ class OrderProduct extends Model
     protected $fillable = [
         'order_id',
         'product_id',
-        'quantity'
+        'quantity',
+        'total',
+        'size',
+        'features'
+    ];
+
+    protected $casts = [
+        'features' => 'array',
     ];
 
     public function products()
