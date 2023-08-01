@@ -18,6 +18,12 @@ class Order extends Model
         'key'
     ];
 
+    protected $casts = [
+        'colors' => 'array',
+        'has_embroidery' => 'boolean',
+        'has_sublimate' => 'boolean',
+    ];
+
     /**
      * Get the Order state
      */
@@ -35,11 +41,19 @@ class Order extends Model
     }
 
     /**
+     * Get the branch of the Order
+     */
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
+    /**
      * The products that belong to the Order.
      */
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'orders_products', 'order_id', 'product_id')->withPivot('id','quantity');
+        return $this->belongsToMany(Product::class, 'orders_products', 'order_id', 'product_id')->withPivot('quantity', 'sublimate','size','embroidery','has_embroidery','has_sublimate', 'colors');
     }
 
     /**

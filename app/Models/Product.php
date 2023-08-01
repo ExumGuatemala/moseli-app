@@ -18,7 +18,6 @@ class Product extends Model implements HasMedia
         'existence',
         'order',
         'sale_price',
-        // 'size',
         'colors',
         'has_embroidery',
         'embroidery',
@@ -29,6 +28,7 @@ class Product extends Model implements HasMedia
         'colors' => 'array',
         'features' => 'array',
         'has_embroidery' => 'boolean',
+        'has_sublimate' => 'boolean',
     ];
 
 
@@ -51,7 +51,7 @@ class Product extends Model implements HasMedia
      */
     public function orders()
     {
-        return $this->belongsToMany(Order::class, 'orders_products', 'order_id', 'product_id')->withPivot('quantity');
+        return $this->belongsToMany(Order::class, 'orders_products', 'order_id', 'product_id')->withPivot('quantity', 'sublimate','size','embroidery','has_embroidery','has_sublimate', 'colors');
     }
 
     public function registerMediaConversions(Media $media = null): void
