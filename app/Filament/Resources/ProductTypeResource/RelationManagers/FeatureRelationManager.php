@@ -2,20 +2,21 @@
 
 namespace App\Filament\Resources\ProductTypeResource\RelationManagers;
 
-use Filament\Forms;
+use Filament\Tables;
+
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
-use Filament\Tables;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+
 use Filament\Forms\Components\Select;
-use App\Filament\Resources\TextInput\Mask;
-use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Repeater;
+use Filament\Tables\Columns\TextColumn;
+
 use Illuminate\Database\Eloquent\Model;
+
 use App\Services\SizeService;
+use App\Enums\ProductEnum;
 
 
 class FeatureRelationManager extends RelationManager
@@ -36,7 +37,7 @@ class FeatureRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->label('Nombre')
                     ->columnSpan('full')
                     ->required()
@@ -47,29 +48,16 @@ class FeatureRelationManager extends RelationManager
                     ->schema([
                         Select::make('name')
                             ->label('Talla')
-                            ->options([
-                                '2' => '2',
-                                '4' => '4',
-                                '6' => '6',
-                                '8' => '8',
-                                '10' => '10',
-                                '12' => '12',
-                                '14' => '14',
-                                'XS' => 'XS',
-                                'S' => 'S',
-                                'M' => 'M',
-                                'L' => 'L',
-                                'XL' => 'XL',
-                            ]),
+                            ->options(ProductEnum::SIZES),
                         TextInput::make('length')
                             ->label('Tamaño (en cm)'),
 
                     ])
-                    ->itemLabel("talla")
-                    // ->orderable()
+                    ->itemLabel(fn (array $state): ?string => "Talla " . $state['name'] ?? null)
                     ->columnSpan('full')
                     ->createItemButtonLabel('Añadir una talla')
                     ->columns(1)
+                    ->collapsed()
                     ->defaultItems(1)
             ]);
     }
@@ -78,14 +66,13 @@ class FeatureRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                 ->label('Nombre'),
-                Tables\Columns\TextColumn::make('corsize')
-                ->label('Talla'),
-                Tables\Columns\TextColumn::make('length')
-                ->label('Tamaño'),
-                Tables\Columns\TextColumn::make('price')
-                ->label('Precio'),
+                TextColumn::make('availableSizes')
+                ->label('Tallas con Informacion')
+                ->getStateUsing(function (Model $record): String {
+                    return implode(", ", $record->sizes->pluck('name')->toArray());
+                }),
             ])
             ->filters([
                 //

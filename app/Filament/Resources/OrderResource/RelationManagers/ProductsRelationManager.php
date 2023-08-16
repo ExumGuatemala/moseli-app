@@ -15,9 +15,7 @@ use Filament\Tables\Actions\DetachAction;
 use Filament\Forms\Components\Select;
 use App\Models\ProductColor;
 use Filament\Forms\Components\Toggle;
-use Closure;
 use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\Action;
 use Filament\Tables;
 use App\Models\Feature;
 use App\Models\Product;
@@ -31,7 +29,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Select;
 
 class ProductsRelationManager extends RelationManager
 {
@@ -116,7 +113,7 @@ class ProductsRelationManager extends RelationManager
                         ->columnSpan('full')
                         ->defaultItems(0)
                         ->collapsed(),
-                   TextInput::make('total')->label("total"),
+                   TextInput::make('total')->label("Total"),
                    Select::make('colors')
                     ->multiple()
                     ->label('Color')
@@ -128,8 +125,7 @@ class ProductsRelationManager extends RelationManager
                     ->label('Texto de Bordado')
                     ->hidden(
                         fn (Closure $get): bool => $get('has_embroidery') == false
-                    ),
-
+                    )
             ]);
     }
 
@@ -239,7 +235,19 @@ class ProductsRelationManager extends RelationManager
                                     ->columns(2)
                                     ->defaultItems(0)
                                     ->collapsed(),
-                                TextInput::make('total')->label("total")
+                                Select::make('colors')
+                                    ->multiple()
+                                    ->label('Color')
+                                    ->options(ProductColor::all()->pluck('name', 'id')),
+                                Toggle::make('has_embroidery')->inline()
+                                    ->label('Agregar bordado?')
+                                    ->reactive(),
+                                TextInput::make('embroidery')
+                                    ->label('Texto de Bordado')
+                                    ->hidden(
+                                        fn (Closure $get): bool => $get('has_embroidery') == false
+                                    ),
+                                TextInput::make('total')->label("Total")
                         ])
                         ->action(
                             function (array $data, RelationManager $livewire) {
