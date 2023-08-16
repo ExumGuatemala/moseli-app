@@ -2,22 +2,18 @@
 
 namespace App\Filament\Resources\ProductTypeResource\RelationManagers;
 
-use Filament\Forms;
-use Filament\Resources\Form;
-use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Resources\Table;
 use Filament\Tables;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Forms\Components\KeyValue;
-use Filament\Tables\Actions\Action;
-use Illuminate\Database\Eloquent\Collection;
-use Filament\Notifications\Notification; 
-use App\Models\SizePrice;
-use App\Services\SizePriceService;
-use Filament\Forms\Components\Repeater;
+
+use Filament\Resources\Form;
+use Filament\Resources\Table;
+use Filament\Resources\RelationManagers\RelationManager;
+
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
+
+use App\Services\SizePriceService;
+use App\Enums\ProductEnum;
 
 
 class SizePriceRelationManager extends RelationManager
@@ -38,21 +34,8 @@ class SizePriceRelationManager extends RelationManager
         return $form
             ->schema([
                 Select::make('name')
-                            ->label('Talla')
-                            ->options([
-                                '2' => '2',
-                                '4' => '4',
-                                '6' => '6',
-                                '8' => '8',
-                                '10' => '10',
-                                '12' => '12',
-                                '14' => '14',
-                                'XS' => 'XS',
-                                'S' => 'S',
-                                'M' => 'M',
-                                'L' => 'L',
-                                'XL' => 'XL',
-                            ]),
+                    ->label('Talla')
+                    ->options(ProductEnum::SIZES),
                         TextInput::make('price')
                             ->label('Precio')
                             ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2)),
@@ -63,7 +46,11 @@ class SizePriceRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
+                TextColumn::make('name')
+                    ->label("Talla"),
+                TextColumn::make('price')
+                    ->label("Precio")
+                    ->money('gtq', true),
             ])
             ->filters([
                 //
