@@ -14,4 +14,13 @@ class ProductType extends Model
     protected $fillable = [
         'name',
     ];
+
+    public function features()
+    {
+        return $this->hasMany(Feature::class, 'product_types_id');
+    }
+    public function size_prices()
+    {
+        return $this->hasMany(SizePrice::class, 'product_type_id');
+    }
 }

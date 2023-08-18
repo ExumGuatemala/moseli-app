@@ -13,9 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('logbook', function (Blueprint $table) {
-            // $table->foreign('model_id')->references('id')->on('orders');
-            $table->foreign('user_id')->references('id')->on('users');
+        Schema::create('features', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->unsignedBigInteger('product_types_id');
+            // $table->json('sizes')->nullable();
+            $table->timestamps();
+
+            $table->foreign('product_types_id')->references('id')->on('product_types');
         });
     }
 
@@ -26,8 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('logbook', function (Blueprint $table) {
-            // $table->dropColumn('user_id');
-        });
+        Schema::dropIfExists('features');
     }
 };

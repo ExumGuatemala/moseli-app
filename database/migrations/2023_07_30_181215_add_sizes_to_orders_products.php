@@ -13,9 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('logbook', function (Blueprint $table) {
-            // $table->foreign('model_id')->references('id')->on('orders');
-            $table->foreign('user_id')->references('id')->on('users');
+        Schema::table('orders_products', function (Blueprint $table) {
+            $table->json('features')->nullable();
+            $table->decimal('total', 9,2);
         });
     }
 
@@ -26,8 +26,9 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('logbook', function (Blueprint $table) {
-            // $table->dropColumn('user_id');
+        Schema::table('orders_products', function (Blueprint $table) {
+            $table->dropColumn('features');
+            $table->dropColumn('total');
         });
     }
 };

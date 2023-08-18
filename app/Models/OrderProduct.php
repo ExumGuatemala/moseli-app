@@ -12,6 +12,14 @@ class OrderProduct extends Model
     protected $fillable = [
         'order_id',
         'product_id',
+        'quantity',
+        'total',
+        'size',
+        'features'
+    ];
+
+    protected $casts = [
+        'features' => 'array',
         'size',
         'colors',
         'has_embroidery',
@@ -19,12 +27,6 @@ class OrderProduct extends Model
         'has_sublimate',
         'sublimate',
         'quantity'
-    ];
-
-    protected $casts = [
-        'colors' => 'array',
-        'has_embroidery' => 'boolean',
-        'has_sublimate' => 'boolean',
     ];
 
     public function products()

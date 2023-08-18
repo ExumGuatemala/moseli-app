@@ -73,8 +73,8 @@ class PaymentsRelationManager extends RelationManager
                 Tables\Actions\DeleteAction::make()
                 ->label('Eliminar')
                 ->modalHeading('Eliminar pago')
-    ->modalSubheading('Esta accion es permanente, desea continuar con la eliminación?')
-    ->modalButton('Si, deseo eliminarlo')
+            ->modalSubheading('Esta accion es permanente, desea continuar con la eliminación?')
+            ->modalButton('Si, deseo eliminarlo')
                 ->after(function (RelationManager $livewire) {
                     self::$orderService->updateBalance($livewire->ownerRecord->id);
                         $livewire->emit('refresh');
