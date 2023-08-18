@@ -2,33 +2,35 @@
 
 namespace App\Filament\Resources\OrderResource\RelationManagers;
 
-use Filament\Forms;
+use Filament\Tables;
+
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
-use Filament\Forms\Components\TextInput;
+
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Actions\AttachAction;
-use Closure;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DetachAction;
-use Filament\Forms\Components\Select;
-use App\Models\ProductColor;
-use Filament\Forms\Components\Toggle;
 use Filament\Tables\Actions\EditAction;
-use Filament\Tables;
+
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+
+use Closure;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+
+use App\Enums\ProductEnum;
 use App\Models\Feature;
 use App\Models\Product;
 use App\Models\OrderProduct;
+use App\Models\ProductColor;
 use App\Services\OrderService;
 use App\Services\ProductOrderService;
 use App\Services\LogBookService;
 use App\Repositories\ProductRepository;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Facades\Auth;
-use Filament\Forms\Components\Repeater;
 
 class ProductsRelationManager extends RelationManager
 {
@@ -53,9 +55,7 @@ class ProductsRelationManager extends RelationManager
     public static function form(Form $form): Form
     {
         return $form
-            
             ->schema([
-
                     Select::make('product_id')
                         ->label('Producto')
                         ->options(function (callable $get,callable $set) {
@@ -182,26 +182,12 @@ class ProductsRelationManager extends RelationManager
                                         return Product::all()->pluck('name','id');
                                     })
                                     ->reactive(),
-
                                 TextInput::make('quantity')
                                     ->label('Cantidad a comprar')
                                     ->required(),
                                 Select::make('size')
                                     ->label('Talla')
-                                    ->options([
-                                        '2' => '2',
-                                        '4' => '4',
-                                        '6' => '6',
-                                        '8' => '8',
-                                        '10' => '10',
-                                        '12' => '12',
-                                        '14' => '14',
-                                        'XS' => 'XS',
-                                        'S' => 'S',
-                                        'M' => 'M',
-                                        'L' => 'L',
-                                        'XL' => 'XL',
-                                    ])
+                                    ->options(ProductEnum::SIZES)
                                     ->reactive()
                                     ->afterStateUpdated(
                                         function ($state, callable $set, callable $get)
