@@ -29,6 +29,8 @@ class ProductsRelationManager extends RelationManager
 {
     protected static string $relationship = 'products';
 
+    protected bool $allowsDuplicates = true;
+
     protected static ?string $recordTitleAttribute = 'name';
     protected static ?string $navigationLabel = 'Productos';
     protected static ?string $pluralModelLabel = 'Productos';
