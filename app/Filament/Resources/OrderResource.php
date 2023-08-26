@@ -114,9 +114,9 @@ class OrderResource extends Resource
                     ]),
                 Select::make('branchId')
                     ->label('Sucursal')
+                    ->required()
                     ->options(Branch::all()->pluck('name', 'id'))
-                    ->relationship('branch', 'name')
-                    ->required(),
+                    ->relationship('branch', 'name'),
                 TextInput::make('key')
                     ->label("Código")
                     ->disabled()
@@ -131,6 +131,10 @@ class OrderResource extends Resource
                     ->label('Fecha de Creación'),
                 Select::make('stateId')
                     ->label('Estado')
+                    ->afterStateHydrated(function (Select $component) {
+                        $orderStateIdForRecibida = OrderState::where('name', 'Recibida')->first()->id;
+                        $component->state($orderStateIdForRecibida);
+                    })
                     ->options(OrderState::all()->pluck('name', 'id'))
                     ->relationship('state', 'name')
                     ->required(),
