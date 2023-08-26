@@ -9,6 +9,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\DatePicker;
 use App\Models\Order;
 use App\Models\OrderState;
 use App\Models\Branch;
@@ -51,14 +52,6 @@ class OrderResource extends Resource
                     ->options(Client::all()->pluck('name', 'id'))
                     ->relationship('client', 'name')
                     ->required(),
-                TextInput::make('created_at')
-                    ->disabled()
-                    ->label('Fecha de Creación'),
-                Select::make('stateId')
-                    ->label('Estado')
-                    ->options(OrderState::all()->pluck('name', 'id'))
-                    ->relationship('state', 'name')
-                    ->required(),
                 Select::make('branchId')
                     ->label('Sucursal')
                     ->options(Branch::all()->pluck('name', 'id'))
@@ -71,7 +64,19 @@ class OrderResource extends Resource
                         if(!$state){
                             $component->state(strtoupper(substr(bin2hex(random_bytes(ceil(8 / 2))), 0, 8)));
                         }
-                    }),                    
+                    }),   
+                TextInput::make('created_at')
+                    ->disabled()
+                    ->hidden()
+                    ->label('Fecha de Creación'),
+                Select::make('stateId')
+                    ->label('Estado')
+                    ->options(OrderState::all()->pluck('name', 'id'))
+                    ->relationship('state', 'name')
+                    ->required(),
+                DatePicker::make('finish_date')
+                    ->label('Fecha Aproximada de Entrega')
+                    ->displayFormat('d/m/Y'),
                 TextInput::make('total')
                     ->default(0)
                     ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2)),

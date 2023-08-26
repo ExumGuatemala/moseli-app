@@ -15,7 +15,8 @@ class Order extends Model
         'state_id',
         'client_id',
         'description',
-        'key'
+        'key',
+        'finish_date',
     ];
 
     protected $casts = [
