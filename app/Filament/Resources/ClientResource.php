@@ -40,10 +40,17 @@ class ClientResource extends Resource
                     ->maxLength(255)
                     ->label("Nombre Completo")
                     ->columnSpan('full'),
+                TextInput::make('phone1')
+                    ->tel()
+                    ->required()
+                    ->maxLength(255)
+                    ->label("Teléfono 1"),
                 TextInput::make('email')
                     ->email()
                     ->maxLength(255)
                     ->label("Correo Electrónico"),
+                TextInput::make('nit')
+                    ->label('NIT'),
                 TextInput::make('key')
                     ->maxLength(255)
                     ->label("Código")
@@ -53,15 +60,6 @@ class ClientResource extends Resource
                             $component->state(strtoupper(substr(bin2hex(random_bytes(ceil(8 / 2))), 0, 8)));
                         }
                     }),
-                TextInput::make('phone1')
-                    ->tel()
-                    ->required()
-                    ->maxLength(255)
-                    ->label("Teléfono 1"),
-                TextInput::make('phone2')
-                    ->tel()
-                    ->maxLength(255)
-                    ->label("Teléfono 2"),
                 TextInput::make('address')
                     ->required()
                     ->columnSpan('full')
