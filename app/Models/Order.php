@@ -19,12 +19,6 @@ class Order extends Model
         'finish_date',
     ];
 
-    protected $casts = [
-        'colors' => 'array',
-        'has_embroidery' => 'boolean',
-        'has_sublimate' => 'boolean',
-    ];
-
     /**
      * Get the Order state
      */
