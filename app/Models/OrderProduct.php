@@ -13,10 +13,7 @@ class OrderProduct extends Model
         'order_id',
         'product_id',
         'size',
-        'colors',
-        'has_embroidery',
         'embroidery',
-        'has_sublimate',
         'sublimate',
         'quantity'
     ];
