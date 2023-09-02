@@ -23,9 +23,9 @@ return new class extends Migration
 
         });
 
-        Schema::table('orders', function (Blueprint $table) {
-            $table->decimal('balance', 9, 2)->nullable()->after('total');
-        });
+        // Schema::table('orders', function (Blueprint $table) {
+        //     $table->decimal('balance', 9, 2)->nullable()->after('total');
+        // });
     }
 
     /**
