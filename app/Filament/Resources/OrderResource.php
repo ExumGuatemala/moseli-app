@@ -9,10 +9,13 @@ use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\DatePicker;
 use App\Models\Order;
 use App\Models\OrderState;
 use App\Models\Branch;
 use App\Models\Client;
+use App\Models\Departamento;
+use App\Models\Municipio;
 use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
@@ -50,20 +53,70 @@ class OrderResource extends Resource
                     ->searchable()
                     ->options(Client::all()->pluck('name', 'id'))
                     ->relationship('client', 'name')
-                    ->required(),
-                TextInput::make('created_at')
-                    ->disabled()
-                    ->label('Fecha de Creación'),
-                Select::make('stateId')
-                    ->label('Estado')
-                    ->options(OrderState::all()->pluck('name', 'id'))
-                    ->relationship('state', 'name')
-                    ->required(),
+                    ->required()
+                    ->createOptionForm([
+                        TextInput::make('name')
+                            ->required()
+                            ->maxLength(255)
+                            ->label("Nombre Completo")
+                            ->columnSpan('full'),
+                        TextInput::make('phone1')
+                            ->tel()
+                            ->required()
+                            ->maxLength(255)
+                            ->label("Teléfono 1"),
+                        TextInput::make('email')
+                            ->email()
+                            ->maxLength(255)
+                            ->label("Correo Electrónico"),
+                        TextInput::make('nit')
+                            ->label('NIT'),
+                        TextInput::make('key')
+                            ->maxLength(255)
+                            ->label("Código")
+                            ->disabled()
+                            ->afterStateHydrated(function (TextInput $component, $state) {
+                                if(!$state){
+                                    $component->state(strtoupper(substr(bin2hex(random_bytes(ceil(8 / 2))), 0, 8)));
+                                }
+                            }),
+                        TextInput::make('address')
+                            ->required()
+                            ->columnSpan('full')
+                            ->label("Dirección"),
+                        Select::make('departamentoId')
+                            ->label('Departamento')
+                            ->afterStateHydrated(function (Model|null $record, Select $component) {
+                                $municipio = $record == null ? $record : Municipio::find($record->municipio_id);
+                                if(!$municipio){
+                                    $component->state(13);
+                                } else {
+                                    $component->state($municipio->departamento->id);
+                                }
+                            })
+                            ->options(Departamento::all()->pluck('name','id')->toArray())
+                            ->reactive()
+                            ->afterStateUpdated(fn (callable $set) => $set('municipioId', null)),
+        
+                        Select::make('municipioId')
+                            ->label('Municipio')
+                            ->relationship('municipio', 'name')
+                            ->options(function (callable $get) {
+                                $departamento = Departamento::find($get('departamentoId'));
+        
+                                if(!$departamento){
+                                    return Municipio::all()->pluck('name','id');
+                                }
+        
+                                return $departamento->municipios->pluck('name','id');
+        
+                            }),
+                    ]),
                 Select::make('branchId')
                     ->label('Sucursal')
+                    ->required()
                     ->options(Branch::all()->pluck('name', 'id'))
-                    ->relationship('branch', 'name')
-                    ->required(),
+                    ->relationship('branch', 'name'),
                 TextInput::make('key')
                     ->label("Código")
                     ->disabled()
@@ -71,7 +124,28 @@ class OrderResource extends Resource
                         if(!$state){
                             $component->state(strtoupper(substr(bin2hex(random_bytes(ceil(8 / 2))), 0, 8)));
                         }
-                    }),                    
+                    }),   
+                TextInput::make('created_at')
+                    ->disabled()
+                    ->hidden()
+                    ->label('Fecha de Creación'),
+                Select::make('stateId')
+                    ->label('Estado')
+                    ->afterStateHydrated(function (Model|null $record, Select $component) {
+                        $order = $record == null ? $record : Order::find($record->id);
+                        if(!$order){
+                            $orderStateIdForRecibida = OrderState::where('name', 'Recibida')->first()->id;
+                            $component->state($orderStateIdForRecibida);
+                        } else {
+                            $component->state($order->state_id);
+                        }
+                    })
+                    ->options(OrderState::all()->pluck('name', 'id'))
+                    ->relationship('state', 'name')
+                    ->required(),
+                DatePicker::make('finish_date')
+                    ->label('Fecha Aproximada de Entrega')
+                    ->displayFormat('d/m/Y'),
                 TextInput::make('total')
                     ->default(0)
                     ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2)),

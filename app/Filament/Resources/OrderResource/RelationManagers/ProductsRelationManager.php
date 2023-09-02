@@ -7,11 +7,13 @@ use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\AttachAction;
 use Filament\Tables\Actions\DetachAction;
 use Filament\Forms\Components\Select;
 use App\Models\ProductColor;
+use App\Models\ProductType;
 use Filament\Forms\Components\Toggle;
 use Closure;
 use Filament\Tables\Actions\EditAction;
@@ -25,6 +27,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class ProductsRelationManager extends RelationManager
 {
     protected static string $relationship = 'products';
+
+    protected bool $allowsDuplicates = true;
 
     protected static ?string $recordTitleAttribute = 'name';
     protected static ?string $navigationLabel = 'Productos';
@@ -42,7 +46,31 @@ class ProductsRelationManager extends RelationManager
             ->schema([
                 TextInput::make('name')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->columnSpan('full')
+                    ->label("Nombre"),
+                TextInput::make('sale_price')
+                    ->required()
+                    ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2))
+                    ->label("Precio de Venta"),
+                TextInput::make('existence')
+                    ->numeric()
+                    ->label("Existencia"),
+                Select::make('typeId')
+                    ->relationship('type', 'name')
+                    ->label('Tipo')
+                    ->columnSpan('full')
+                    ->options(ProductType::all()->pluck('name', 'id'))
+                    ->required()
+                    ->searchable(),
+                Textarea::make('description')
+                    ->label('Descripción')
+                    ->columnSpan('full')
+                    ->rows(3),
+                TextInput::make('quantity')
+                    ->label('Cantidad a comprar')
+                    ->required()
+                    ->default(1),
                 Select::make('size')
                     ->label('Talla')
                     ->afterStateHydrated(function (Model|null $record, Select $component) {
@@ -62,17 +90,25 @@ class ProductsRelationManager extends RelationManager
                         'L' => 'L',
                         'XL' => 'XL',
                     ]),
-                Select::make('colors')
-                    ->multiple()
-                    ->label('Color')
-                    ->options(ProductColor::all()->pluck('name', 'id')),
-                    Toggle::make('has_embroidery')->inline()
+                // Select::make('colors')
+                //     ->multiple()
+                //     ->label('Color')
+                //     ->options(ProductColor::all()->pluck('name', 'id')),
+                Toggle::make('has_embroidery')->inline()
                     ->label('Agregar bordado?')
                     ->reactive(),
                 TextInput::make('embroidery')
                     ->label('Texto de Bordado')
                     ->hidden(
                         fn (Closure $get): bool => $get('has_embroidery') == false
+                    ),
+                Toggle::make('has_sublimate')->inline()
+                    ->label('Agregar sublimado?')
+                    ->reactive(),
+                TextInput::make('sublimate')
+                    ->label('Texto de sublimado')
+                    ->hidden(
+                        fn (Closure $get): bool => $get('has_sublimate') == false
                     ),
             ]);
     }
@@ -179,6 +215,7 @@ class ProductsRelationManager extends RelationManager
                         self::$orderService->updateBalance($livewire->ownerRecord->id);                        
                         $livewire->emit('refresh');
                     }),
+                Tables\Actions\CreateAction::make(),
             ])
             ->actions([
                 Action::make("goToProduct")
