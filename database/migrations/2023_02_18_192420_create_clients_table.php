@@ -35,7 +35,7 @@ return new class extends Migration
             $table->string('address');
 			$table->unsignedBigInteger('municipio_id')->nullable();
             $table->string('phone1');
-            $table->string('phone2');
+            $table->string('phone2')->nullable();
             $table->timestamps();
 
 			$table->foreign('municipio_id')->references('id')->on('municipios');
