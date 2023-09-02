@@ -53,7 +53,12 @@ class ProductResource extends Resource
                     ->label("Precio de Venta"),
                 TextInput::make('existence')
                     ->numeric()
-                    ->label("Existencia"),
+                    ->label("Existencia")
+                    ->afterStateHydrated(function (TextInput $component, $state) {
+                        if(!$state){
+                            $component->state(1);
+                        }
+                    }),
                 Select::make('typeId')
                     ->relationship('type', 'name')
                     ->label('Tipo')
