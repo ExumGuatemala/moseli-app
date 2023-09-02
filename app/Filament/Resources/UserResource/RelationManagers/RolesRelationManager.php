@@ -40,7 +40,7 @@ class RolesRelationManager extends RelationManager
                 Tables\Actions\AttachAction::make(),
             ])
             ->actions([
-                Tables\Actions\Detachaction::make(),
+                Tables\Actions\DetachAction::make(),
             ])
             ->bulkActions([
                 
