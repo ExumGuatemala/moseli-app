@@ -47,7 +47,6 @@ class UserResource extends Resource
                 DateTimePicker::make('email_verified_at')
                 ->label("Fecha de Verificación de Cuenta"),
                 TextInput::make('password')
-                    ->password()
                     ->required()
                     ->maxLength(255)
                     ->label("Contraseña"),
