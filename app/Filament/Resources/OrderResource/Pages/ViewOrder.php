@@ -41,7 +41,6 @@ class ViewOrder extends ViewRecord
             EditAction::make()->label('Editar'),
             Action::make("nextStatus")
                 ->label(function () {
-                    //$orderService = new OrderService();
                     return "Cambiar a " . self::$orderService->getNextOrderStatus($this->record->state_id)->name;
                 })
                 ->requiresConfirmation()
@@ -49,10 +48,12 @@ class ViewOrder extends ViewRecord
                 ->modalSubheading('¿Seguro que desea cambiar al siguiente estado?')
                 ->modalButton('Si, seguro')
                 ->action(function () {
-                    //$orderService = new OrderService();
                     self::$orderService->changeToNextOrderStatus($this->record->id, $this->record->state_id);
                     redirect()->intended('/admin/orders/'.str($this->record->id));
                 }),
+            Action::make('getPdf')
+                ->label('PDF')
+                ->url(fn (): string => route('order.pdf', ['order' => $this->record]), shouldOpenInNewTab: true),
         ];
     }
 
