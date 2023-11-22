@@ -14,6 +14,7 @@ class Order extends Model
         'balance',
         'state_id',
         'client_id',
+        'institution_id',
         'description',
         'key',
         'finish_date',
@@ -33,6 +34,14 @@ class Order extends Model
     public function client()
     {
         return $this->belongsTo(Client::class);
+    }
+
+    /**
+     * Get the institution of the Order
+     */
+    public function institution()
+    {
+        return $this->belongsTo(Institution::class);
     }
 
     /**
