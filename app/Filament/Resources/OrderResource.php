@@ -15,6 +15,7 @@ use App\Models\OrderState;
 use App\Models\Branch;
 use App\Models\Client;
 use App\Models\Departamento;
+use App\Models\Institution;
 use App\Models\Municipio;
 use Filament\Forms;
 use Filament\Resources\Form;
@@ -49,7 +50,6 @@ class OrderResource extends Resource
             ->schema([
                 Select::make('clientId')
                     ->label('Cliente')
-                    ->columnSpan('full')
                     ->searchable()
                     ->options(Client::all()->pluck('name', 'id'))
                     ->relationship('client', 'name')
@@ -112,6 +112,10 @@ class OrderResource extends Resource
         
                             }),
                     ]),
+                Select::make('institution_id')
+                    ->label("Institución")
+                    ->options(Institution::all()->pluck('name', 'id'))
+                    ->relationship('institution', 'name'),
                 Select::make('branchId')
                     ->label('Sucursal')
                     ->required()
