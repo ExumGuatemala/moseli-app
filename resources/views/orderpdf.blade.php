@@ -1,36 +1,70 @@
 <style>
 table {
-  font-family: arial, sans-serif;
   border-collapse: collapse;
   width: 100%;
 }
 
-td, th {
-  border: 1px solid #dddddd;
+th, td {
   text-align: left;
   padding: 8px;
+  border: 1px solid black;
+}
+
+th {
+  background-color: #D3E1F1;
+  color: black;
+  text-align: center;
 }
 
 tr:nth-child(even) {
-  background-color: #dddddd;
+  background-color: white;
 }
+
+tr:nth-child(odd) {
+  background-color: white;
+}
+
 </style>
 
 <div class="flex items-center">
-    <h1>Moseli La casa del Pants</h1>
+    <img style="width: 100%;" src="https://moseli-media.nyc3.cdn.digitaloceanspaces.com/moseli-pdf-header.png" />
 </div>
 <div>
     <h1>Orden #{{ $order->key }}</h1>
 </div>
-<hr>
+<div style="background-color: black; height: 1px; margin-bottom: 20px;"></div>
 <div>
-    <h4>Cliente: {{ $order->client->name }}</h4>
-    <h4>Teléfono: {{ $order->client->phone1 }}</h4>
-    <h4>Fecha de Creación: {{ $order->created_at }}</h4>
-    <h4>Descripción: {{ $order->description ?? "No hay descripción." }} </h4>
+    <table>
+        <tr>
+            <th colspan="4">DATOS DEL CLIENTE</th>
+        </tr>
+        <tr>
+            <td>CLIENTE:</td>
+            <td colspan="3">{{ $order->client->name }}</td>
+        </tr>
+        <tr>
+            <td>DIRECCIÓN:</td>
+            <td>{{ $order->client->address }}</td>
+            <td>TELÉFONO:</td>
+            <td>{{ $order->client->phone1 }}</td>
+        </tr>
+        <tr>
+            <td>NIT:</td>
+            <td>{{ $order->client->nit }}</td>
+            <td>FECHA:</td>
+            <td>{{ $order->created_at }}</td>
+        </tr>
+    </table>
 </div>
 <div>
-    <h2>Productos</h2>
+    <h3>Descripción de la Orden: </h3>
+    <p>
+        {{ $order->description ?? "No hay descripción." }} 
+    </p>
+</div>
+
+<div>
+    <h3>Productos</h3>
     <table>
         <tr>
             <th>Nombre de Producto</th>
@@ -46,5 +80,19 @@ tr:nth-child(even) {
         @endforeach
     </table>
 </div>
+<div style="margin-top: 20px;">
+    <div>Total: Q{{ $order->total }}</div>
+    <div>Anticipo: Q{{ $order->total - $order->balance }}</div>
+    <div>Saldo: Q{{ $order->balance }}</div>
+</div>
+<div style="background-color: black; height: 1px; margin-bottom: 100px;"></div>
+<div>
+    <div>
+        Firma de Recibido del Cliente
+    </div>
+    <div style="background-color: black; height: 2px; margin-bottom: 20px;"></div>
+</div>
+<div style="background-color: gray; height: 1px; width: 35%;"></div>
+<div style="font-size: 12px; color: gray;">Documento generado el {{ Carbon\Carbon::createFromFormat('Y-m-d H:i:s', Carbon\Carbon::now(), 'UTC')->setTimezone('America/Guatemala') }}</div>
 
 
