@@ -21,7 +21,9 @@ class ListOrders extends ListRecords
     protected function getTableQuery(): Builder
     {
         $deliveredOrderStateId = OrderState::where('name', OrderEnum::DELIVERED)->get()[0]->id;
-        return Order::query()->whereNot('state_id', $deliveredOrderStateId);
+        return Order::query()
+            ->whereNot('state_id', $deliveredOrderStateId)
+            ->where('institution_id', null);
     }
 
     protected function getActions(): array
