@@ -67,15 +67,19 @@ tr:nth-child(odd) {
     <h3>Productos</h3>
     <table>
         <tr>
-            <th>Nombre de Producto</th>
-            <th>Precio</th>
-            <th>Talla</th>
+            <th style="width:50%">Nombre de Producto</th>
+            <th style="width:10%">Talla</th>
+            <th style="width:10%">Precio Unitario</th>
+            <th style="width:10%">Cantidad</th>
+            <th style="width:10%">Subtotal</th>
         </tr>
         @foreach ($order->products as $product)
         <tr>
             <td>{{ $product->name }}</td>
-            <td>Q.{{ $product->sale_price }}</td>
             <td>{{ $product->pivot->size }}</td>
+            <td>Q.{{ $product->sale_price }}</td>
+            <td>{{ $product->pivot->quantity }}</td>
+            <td>Q.{{ $product->sale_price * $product->pivot->quantity }}</td>
         </tr>
         @endforeach
     </table>
