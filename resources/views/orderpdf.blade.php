@@ -79,15 +79,15 @@ tr:nth-child(odd) {
             <td>{{ $product->pivot->size }}</td>
             <td>Q.{{ $product->sale_price }}</td>
             <td>{{ $product->pivot->quantity }}</td>
-            <td>Q.{{ $product->sale_price * $product->pivot->quantity }}</td>
+            <td>Q.{{ number_format(($product->sale_price * $product->pivot->quantity), 2) }}</td>
         </tr>
         @endforeach
     </table>
 </div>
 <div style="margin-top: 20px;">
-    <div>Total: Q{{ $order->total }}</div>
-    <div>Anticipo: Q{{ $order->total - $order->balance }}</div>
-    <div>Saldo: Q{{ $order->balance }}</div>
+    <div>Total: Q{{ number_format($order->total, 2) }}</div>
+    <div>Anticipo: Q{{ number_format(($order->total - $order->balance), 2) }}</div>
+    <div>Saldo: Q{{ number_format($order->balance, 2) }}</div>
 </div>
 <div style="background-color: black; height: 1px; margin-bottom: 100px;"></div>
 <div>
