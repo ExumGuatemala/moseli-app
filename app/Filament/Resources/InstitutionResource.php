@@ -40,7 +40,8 @@ class InstitutionResource extends Resource
                     ->required(),
                 TextInput::make('phone')
                     ->label("Teléfono")
-                    ->tel(),
+                    ->tel()
+                    ->required(),
                 TextInput::make('address')
                     ->label("Dirección")
                     ->columnSpan('full'),
@@ -63,8 +64,8 @@ class InstitutionResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),

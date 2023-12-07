@@ -152,11 +152,13 @@ class OrderResource extends Resource
                     ->displayFormat('d/m/Y'),
                 TextInput::make('total')
                     ->default(0)
-                    ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2)),
+                    ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2))
+                    ->disabled(),
                 TextInput::make('balance')
                     ->label("Saldo")
                     ->default(0)
-                    ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2)),
+                    ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2))
+                    ->disabled(),
                 Textarea::make('description')
                     ->label('Descripción')
                     ->columnSpan('full')
