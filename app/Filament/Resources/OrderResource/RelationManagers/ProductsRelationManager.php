@@ -141,12 +141,8 @@ class ProductsRelationManager extends RelationManager
                         return $result;
                     })
                     ->wrap(),
-                TextColumn::make('embroidery')
-                    ->label("Bordado")
-                    ->wrap(),
-                TextColumn::make('sublimate')
-                    ->label("Sublimado")
-                    ->wrap(),
+                TextColumn::make("size")
+                    ->label("Talla"),
                 TextColumn::make('subtotal')
                     ->money('gtq', true)
                     ->label("SubTotal")
