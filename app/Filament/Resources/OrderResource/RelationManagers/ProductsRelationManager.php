@@ -19,15 +19,7 @@ use Filament\Forms\Components\Toggle;
 use Closure;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\Action;
-use Filament\Tables\Actions\DetachAction;
-use Filament\Tables\Actions\EditAction;
-
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Toggle;
-
-use Closure;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
@@ -35,7 +27,6 @@ use App\Enums\ProductEnum;
 use App\Models\Feature;
 use App\Models\Product;
 use App\Models\OrderProduct;
-use App\Models\ProductColor;
 use App\Services\OrderService;
 use App\Services\ProductOrderService;
 use App\Services\LogBookService;
