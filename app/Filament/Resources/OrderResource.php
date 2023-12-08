@@ -27,6 +27,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Tables\Actions\Action;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Repositories\OrderStateRepository;
 use App\Repositories\ProductRepository;
@@ -163,6 +164,13 @@ class OrderResource extends Resource
                     ->label('Descripción')
                     ->columnSpan('full')
                     ->rows(10),
+                SpatieMediaLibraryFileUpload::make('Imagenes')
+                    ->columnSpan('full')
+                    ->multiple()
+                    ->conversion('thumb')
+                    ->enableReordering()
+                    ->enableOpen()
+                    ->visibility('public'),
             ]);
     }
 
