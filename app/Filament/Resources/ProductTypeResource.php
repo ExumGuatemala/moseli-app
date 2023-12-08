@@ -2,16 +2,20 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ProductTypeResource\Pages;
-use App\Filament\Resources\ProductTypeResource\RelationManagers;
-use Filament\Forms\Components\TextInput;
-use Filament\Tables\Columns\TextColumn;
 use App\Models\ProductType;
+
 use Filament\Forms;
 use Filament\Resources\Form;
-use Filament\Resources\Resource;
-use Filament\Resources\Table;
+use Filament\Forms\Components\TextInput;
+
 use Filament\Tables;
+use Filament\Resources\Table;
+use Filament\Tables\Columns\TextColumn;
+
+use Filament\Resources\Resource;
+use App\Filament\Resources\ProductTypeResource\Pages;
+use App\Filament\Resources\ProductTypeResource\RelationManagers;
+
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -54,7 +58,6 @@ class ProductTypeResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -62,11 +65,21 @@ class ProductTypeResource extends Resource
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
-
+    
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+    
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageProductTypes::route('/'),
+            'index' => Pages\ListProductTypes::route('/'),
+            'create' => Pages\CreateProductType::route('/create'),
+            'view' => Pages\ViewProductType::route('/{record}'),
+            'edit' => Pages\EditProductType::route('/{record}/edit'),
         ];
-    }
+    }    
 }
