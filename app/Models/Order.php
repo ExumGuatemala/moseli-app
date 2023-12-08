@@ -5,23 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Order extends Model
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\Image\Manipulations;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+
+class Order extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, InteractsWithMedia;
 
     protected $fillable = [
         'total',
         'balance',
         'state_id',
         'client_id',
+        'institution_id',
         'description',
-        'key'
-    ];
-
-    protected $casts = [
-        'colors' => 'array',
-        'has_embroidery' => 'boolean',
-        'has_sublimate' => 'boolean',
+        'key',
+        'finish_date',
     ];
 
     /**
@@ -41,6 +42,14 @@ class Order extends Model
     }
 
     /**
+     * Get the institution of the Order
+     */
+    public function institution()
+    {
+        return $this->belongsTo(Institution::class);
+    }
+
+    /**
      * Get the branch of the Order
      */
     public function branch()
@@ -53,7 +62,7 @@ class Order extends Model
      */
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'orders_products', 'order_id', 'product_id')->withPivot('quantity', 'sublimate','size','embroidery','has_embroidery','has_sublimate', 'colors');
+        return $this->belongsToMany(Product::class, 'orders_products', 'order_id', 'product_id')->withPivot('id','quantity', 'sublimate','size','embroidery','has_embroidery','has_sublimate', 'colors');
     }
 
     /**
@@ -70,5 +79,13 @@ class Order extends Model
     public function logbooks()
     {
         return $this->belongsToMany(LogBook::class, 'logbook', 'id', 'model_id');
+    }
+    
+    public function registerMediaConversions(Media $media = null): void
+    {
+        $this
+            ->addMediaConversion('preview')
+            ->fit(Manipulations::FIT_CROP, 300, 300)
+            ->nonQueued();
     }
 }

@@ -7,8 +7,17 @@ use Filament\Tables;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
-
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Actions\AttachAction;
+use Filament\Tables\Actions\DetachAction;
+use Filament\Forms\Components\Select;
+use App\Models\ProductColor;
+use App\Models\ProductType;
+use Filament\Forms\Components\Toggle;
+use Closure;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DetachAction;
 use Filament\Tables\Actions\EditAction;
@@ -35,6 +44,8 @@ use App\Repositories\ProductRepository;
 class ProductsRelationManager extends RelationManager
 {
     protected static string $relationship = 'products';
+
+    protected bool $allowsDuplicates = true;
 
     protected static ?string $recordTitleAttribute = 'name';
     protected static ?string $navigationLabel = 'Productos';
@@ -125,7 +136,15 @@ class ProductsRelationManager extends RelationManager
                     ->label('Texto de Bordado')
                     ->hidden(
                         fn (Closure $get): bool => $get('has_embroidery') == false
-                    )
+                    ),
+                Toggle::make('has_sublimate')->inline()
+                    ->label('Agregar sublimado?')
+                    ->reactive(),
+                TextInput::make('sublimate')
+                    ->label('Texto de sublimado')
+                    ->hidden(
+                        fn (Closure $get): bool => $get('has_sublimate') == false
+                    ),
             ]);
     }
 
@@ -152,12 +171,8 @@ class ProductsRelationManager extends RelationManager
                         return $result;
                     })
                     ->wrap(),
-                TextColumn::make('embroidery')
-                    ->label("Bordado")
-                    ->wrap(),
-                TextColumn::make('sublimate')
-                    ->label("Sublimado")
-                    ->wrap(),
+                TextColumn::make("size")
+                    ->label("Talla"),
                 TextColumn::make('subtotal')
                     ->money('gtq', true)
                     ->label("SubTotal")
@@ -260,6 +275,7 @@ class ProductsRelationManager extends RelationManager
                         self::$logBookService->saveEvent($livewire->ownerRecord->id, "App\Models\Order",Auth::user()->id, "Se editó el producto = ".$livewire->mountedTableActionData["name"]." en la orden con el codigo = ".$livewire->ownerRecord->key);
                         $livewire->emit('refresh');
                     }),
+                Tables\Actions\CreateAction::make(),
             ])
             ->actions([
                 Action::make("goToProduct")

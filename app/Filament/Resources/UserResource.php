@@ -47,7 +47,6 @@ class UserResource extends Resource
                 DateTimePicker::make('email_verified_at')
                 ->label("Fecha de Verificación de Cuenta"),
                 TextInput::make('password')
-                    ->password()
                     ->required()
                     ->maxLength(255)
                     ->label("Contraseña"),
@@ -81,6 +80,15 @@ class UserResource extends Resource
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
+
+    public static function getRelations(): array
+    {
+        return [
+            RelationManagers\RolesRelationManager::class,
+        ];
+    }
+    
+
     public static function getPages(): array
     {
         return [
