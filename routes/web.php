@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OrderPdf;
+use App\Http\Controllers\InstitutionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,4 +21,8 @@ Route::get('/server', OrderPdf::class)->name('order.pdf');
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::prefix('institution')->group(function () {
+    Route::get('/{institution_hash}/get-orders', [InstitutionController::class, 'getOrders'])->name("institution.orders");
 });
