@@ -19,13 +19,7 @@ return new class extends Migration
         Schema::table('clients', function (Blueprint $table) {
             $table->softDeletes();
         });
-        Schema::table('features', function (Blueprint $table) {
-            $table->softDeletes();
-        });
         Schema::table('institutions', function (Blueprint $table) {
-            $table->softDeletes();
-        });
-        Schema::table('logbook', function (Blueprint $table) {
             $table->softDeletes();
         });
         Schema::table('order_states', function (Blueprint $table) {
@@ -43,19 +37,10 @@ return new class extends Migration
         Schema::table('product_colors', function (Blueprint $table) {
             $table->softDeletes();
         });
-        Schema::table('product_features', function (Blueprint $table) {
-            $table->softDeletes();
-        });
         Schema::table('product_types', function (Blueprint $table) {
             $table->softDeletes();
         });
         Schema::table('products', function (Blueprint $table) {
-            $table->softDeletes();
-        });
-        Schema::table('products_sizes', function (Blueprint $table) {
-            $table->softDeletes();
-        });
-        Schema::table('sizes', function (Blueprint $table) {
             $table->softDeletes();
         });
         Schema::table('users', function (Blueprint $table) {
