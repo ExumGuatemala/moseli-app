@@ -19,9 +19,6 @@ return new class extends Migration
         Schema::table('clients', function (Blueprint $table) {
             $table->softDeletes();
         });
-        Schema::table('features', function (Blueprint $table) {
-            $table->softDeletes();
-        });
         Schema::table('institutions', function (Blueprint $table) {
             $table->softDeletes();
         });
