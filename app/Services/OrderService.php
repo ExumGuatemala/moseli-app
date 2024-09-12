@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Order;
+use App\Models\Media;
+use App\Models\Cut;
 use App\Models\OrderState;
 use App\Repositories\OrderRepository;
 use App\Repositories\OrdersProductsRepository;
@@ -77,6 +79,26 @@ class OrderService
     public function changeToNextOrderStatus($orderId, $stateId): bool
     {
         $next_state = $this->getNextOrderStatus($stateId);
+        $current_order = Order::whereId($orderId)->first();
+        if($next_state->name == "Corte"){
+            //get associated media
+            $media = $current_order->getMedia()->first();
+            
+            //create cut order
+            $cut_order = Cut::create([
+                'order_id'      => $orderId,
+                'state'         => $next_state->name,
+                'start_date'    => now(),
+                'description'   => $current_order->description,
+            ]);
+
+            //create associated media
+            if($media){
+                $media->copy($cut_order);
+            }
+            
+        }
+
         return $this->orderRepository->updateById($orderId, ['state_id' => $next_state->id]) ? true : false;
     }
 }
