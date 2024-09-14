@@ -32,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Filament::registerNavigationGroups([
             'Ventas',
+            'Operaciones',
             'Administración',
         ]);
     }
