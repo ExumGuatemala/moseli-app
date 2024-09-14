@@ -87,7 +87,7 @@ class OrderService
             $description = "Productos del Pedido \n ***************************************** \n";
 
             //Create a text with all product information
-            if($current_order->products)
+            if($current_order->products->count() > 0)
             {
                 $current_order->products->map(function ($item) use ($description) {
                     $description .= "Nombre: " . $item->name . " / Talla: " . $item->pivot->size . " / Cantidad: " . $item->pivot->quantity . " / Color: " . $item->pivot->colors . " \n"; 
