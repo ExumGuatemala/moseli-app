@@ -83,13 +83,23 @@ class OrderService
         if($next_state->name == "Corte"){
             //get associated media
             $media = $current_order->getMedia()->first();
+
+            $description = "Productos del Pedido \n ***************************************** \n";
+
+            //Create a text with all product information
+            if($current_order->products)
+            {
+                $current_order->products->map(function ($item) use ($description) {
+                    $description .= "Nombre: " . $item->name . " / Talla: " . $item->pivot->size . " / Cantidad: " . $item->pivot->quantity . " / Color: " . $item->pivot->colors . " \n"; 
+                });
+            }
             
             //create cut order
             $cut_order = Cut::create([
                 'order_id'      => $orderId,
                 'state'         => $next_state->name,
                 'start_date'    => now(),
-                'description'   => $current_order->description,
+                'description'   => $description . " Descripcion y Detalles \n ***************************************** \n " . $current_order->description,
             ]);
 
             //create associated media
