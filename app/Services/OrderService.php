@@ -89,11 +89,11 @@ class OrderService
             //Create a text with all product information
             if($current_order->products->count() > 0)
             {
-                $current_order->products->map(function ($item) use ($description) {
-                    $description .= "Nombre: " . $item->name . " / Talla: " . $item->pivot->size . " / Cantidad: " . $item->pivot->quantity . " / Color: " . $item->pivot->colors . " \n"; 
+                $current_order->products->map(function ($item) use (&$description) {
+                    $description = $description .  "Nombre: " . $item->name . " / Talla: " . $item->pivot->size . " / Cantidad: " . $item->pivot->quantity . " / Color: " . $item->pivot->colors . " \n"; 
                 });
             }
-            
+
             //create cut order
             $cut_order = Cut::create([
                 'order_id'      => $orderId,
