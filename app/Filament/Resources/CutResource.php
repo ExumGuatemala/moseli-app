@@ -61,7 +61,7 @@ class CutResource extends Resource
                 Tables\Columns\TextColumn::make('client')
                     ->label("Cliente/Institución")
                     ->getStateUsing(function (Model $record) {
-                        return $record->order->institution->name? $record->order->client->name . " / " . $record->order->institution->name : $record->order->client->name;
+                        return $record->order->institution?->name ? $record->order->client->name . " / " . $record->order->institution->name : $record->order->client->name;
                     }),
                 Tables\Columns\TextColumn::make('start_date')
                     ->label("Fecha de Inicio")
