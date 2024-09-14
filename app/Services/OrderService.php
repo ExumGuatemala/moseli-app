@@ -99,7 +99,7 @@ class OrderService
                 'order_id'      => $orderId,
                 'state'         => $next_state->name,
                 'start_date'    => now(),
-                'description'   => $description . " Descripcion y Detalles \n ***************************************** \n " . $current_order->description,
+                'description'   => $description . "\n Descripcion y Detalles \n ***************************************** \n " . $current_order->description,
             ]);
 
             //create associated media
