@@ -64,6 +64,7 @@ class InstitutionResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make()->label('Ver'),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
