@@ -103,6 +103,9 @@ class ProductsRelationManager extends RelationManager
                         'M' => 'M',
                         'L' => 'L',
                         'XL' => 'XL',
+                        'XXL' => 'XXL',
+                        '3XL' => '3XL',
+                        '4XL' => '4XL',
                     ]),
                 // Select::make('colors')
                 //     ->multiple()
@@ -193,6 +196,11 @@ class ProductsRelationManager extends RelationManager
                                 'M' => 'M',
                                 'L' => 'L',
                                 'XL' => 'XL',
+                                'XXL' => 'XXL',
+                                '3XL' => '3XL',
+                                '4XL' => '4XL',
+                                
+
                             ]),
                         Select::make('colors')
                             ->multiple()
@@ -274,6 +282,9 @@ class ProductsRelationManager extends RelationManager
                                     'M' => 'M',
                                     'L' => 'L',
                                     'XL' => 'XL',
+                                    'XXL' => 'XXL',
+                                    '3XL' => '3XL',
+                                    '4XL' => '4XL',
                                 ]),
                             Select::make('colors')
                                 ->multiple()
