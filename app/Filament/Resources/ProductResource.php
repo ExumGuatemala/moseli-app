@@ -62,8 +62,13 @@ class ProductResource extends Resource
                 Select::make('typeId')
                     ->relationship('type', 'name')
                     ->label('Tipo')
-                    ->columnSpan('full')
                     ->options(ProductType::all()->pluck('name', 'id'))
+                    ->required()
+                    ->searchable(),
+                Select::make('institution_id')
+                    ->relationship('institution', 'name')
+                    ->label('Institución')
+                    ->options(\App\Models\Institution::all()->pluck('name', 'id'))
                     ->required()
                     ->searchable(),
                 Textarea::make('description')
