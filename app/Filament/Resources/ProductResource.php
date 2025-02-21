@@ -69,7 +69,6 @@ class ProductResource extends Resource
                     ->relationship('institution', 'name')
                     ->label('Institución')
                     ->options(\App\Models\Institution::all()->pluck('name', 'id'))
-                    ->required()
                     ->searchable(),
                 Textarea::make('description')
                     ->label('Descripción')
