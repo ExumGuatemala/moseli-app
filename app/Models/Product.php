@@ -19,7 +19,8 @@ class Product extends Model implements HasMedia
         'existence',
         'order',
         'sale_price',
-        'description'
+        'description',
+        'institution_id',
     ];
 
     protected $casts = [
@@ -44,6 +45,14 @@ class Product extends Model implements HasMedia
     public function orders()
     {
         return $this->belongsToMany(Order::class, 'orders_products', 'order_id', 'product_id')->withPivot('id','quantity', 'sublimate','size','embroidery','has_embroidery','has_sublimate', 'colors');
+    }
+
+    /**
+     * Get the institution that owns the Product
+     */
+    public function institution()
+    {
+        return $this->belongsTo(Institution::class);
     }
 
     public function registerMediaConversions(Media $media = null): void

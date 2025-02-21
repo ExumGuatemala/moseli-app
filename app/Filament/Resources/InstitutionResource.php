@@ -77,6 +77,7 @@ class InstitutionResource extends Resource
     {
         return [
             RelationManagers\OrdersRelationManager::class,
+            RelationManagers\ProductsRelationManager::class,
         ];
     }
     
