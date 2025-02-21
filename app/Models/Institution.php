@@ -23,4 +23,12 @@ class Institution extends Model
     {
         return $this->hasMany(Order::class);
     }
+
+    /**
+     * Get all the products for the institution.
+     */
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
 }
