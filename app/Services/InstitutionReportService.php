@@ -13,7 +13,13 @@ class InstitutionReportService
         $decrypted_institution_id = Crypt::decryptString(strval($request->institution_hash));
 
         $products = Product::where('institution_id', $decrypted_institution_id)
-            ->with(['orders.client'])
+            ->whereHas('orders', function ($query) use ($request) {
+                $query->whereBetween('orders.created_at', [$request->start_date, $request->end_date]);
+            })
+            ->with(['orders' => function ($query) use ($request) {
+                $query->whereBetween('orders.created_at', [$request->start_date, $request->end_date])
+                  ->with('client');
+            }])
             ->get();
 
         $availableSizes = [
@@ -48,6 +54,10 @@ class InstitutionReportService
                 return $product->orders;
             }),
             'groupedOrders' => $groupedOrders,
+            'dates' => [
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+            ],
         ];
     }
 }

@@ -24,5 +24,5 @@ Route::get('/', function () {
 });
 
 Route::prefix('institution')->group(function () {
-    Route::get('/{institution_hash}/get-orders', InstitutionOrdersReportController::class)->name("institution.orders");
+    Route::get('/{institution_hash}/get-orders/{start_date}/{end_date}', InstitutionOrdersReportController::class)->name("institution.orders");
 });
