@@ -31,7 +31,8 @@ class InstitutionReportService
         foreach ($products as $product) {
             $groupedOrders[$product->id] = [
                 'product' => $product->name,
-                'orders' => []
+                'orders' => [],
+                'totals' => array_fill_keys($availableSizes, 0),
             ];
             $ordersByClient = [];
             foreach ($product->orders as $order) {
@@ -44,6 +45,7 @@ class InstitutionReportService
                     }
                 }
                 $ordersByClient[$order->client->id][$order->pivot->size] += $order->pivot->quantity;
+                $groupedOrders[$product->id]['totals'][$order->pivot->size] += $order->pivot->quantity;
             }
             $groupedOrders[$product->id]['orders'] = $ordersByClient;
         }     

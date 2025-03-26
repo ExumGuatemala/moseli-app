@@ -16,28 +16,38 @@
 </div>
 <div class="m-10">
     @foreach ($groupedOrders as $group)
-        <h2>{{ $group['product'] }}</h2>
-        <table class="font-inter w-full table-auto border-separate border-spacing-y-1 overflow-scroll text-left md:overflow-auto">
-            <thead class="w-full rounded-lg bg-[#222E3A]/[6%] text-base font-semibold text-white">
-                <tr>
-                    <th class="whitespace-nowrap py-3 pl-3 text-sm font-normal text-[#212B36]" width="20%">Client</th>
-                    @foreach ($availableSizes as $size)
-                        <th class="whitespace-nowrap py-3 text-sm font-normal text-[#212B36]" width="5%">{{ $size }}</th>
-                    @endforeach
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($group['orders'] as $clientId => $order)
+        <div class="mb-10"> <!-- Added margin-bottom here -->
+            <h2>{{ $group['product'] }}</h2>
+            <table class="font-inter w-full table-auto border-separate border-spacing-y-1 overflow-scroll text-left md:overflow-auto">
+                <thead class="w-full rounded-lg bg-[#222E3A]/[6%] text-base font-semibold text-white">
                     <tr>
-                        <td class="whitespace-nowrap py-3 pl-3 text-sm font-normal text-[#212B36]">{{ $order['client'] }}</td>
+                        <th class="whitespace-nowrap py-3 pl-3 text-sm font-normal text-[#212B36]" width="20%">Client</th>
                         @foreach ($availableSizes as $size)
-                            <td class="whitespace-nowrap py-3 text-sm font-normal text-[#212B36]">
-                                {{ $order[$size] ?? 0 }}
+                            <th class="whitespace-nowrap py-3 text-sm font-normal text-[#212B36]" width="5%">{{ $size }}</th>
+                        @endforeach
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($group['orders'] as $clientId => $order)
+                        <tr>
+                            <td class="whitespace-nowrap py-3 pl-3 text-sm font-normal text-[#212B36]">{{ $order['client'] }}</td>
+                            @foreach ($availableSizes as $size)
+                                <td class="whitespace-nowrap py-3 text-sm font-normal text-[#212B36]">
+                                    {{ $order[$size] ?? 0 }}
+                                </td>
+                            @endforeach
+                        </tr>
+                    @endforeach
+                    <tr class="bg-gray-100">
+                        <td class="whitespace-nowrap py-3 pl-3 text-sm font-bold text-[#212B36]">Totales</td>
+                        @foreach ($availableSizes as $size)
+                            <td class="whitespace-nowrap py-3 text-sm font-bold text-[#212B36]">
+                                {{ $group['totals'][$size] ?? 0 }}
                             </td>
                         @endforeach
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     @endforeach
 </div>
