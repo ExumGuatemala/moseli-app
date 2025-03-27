@@ -11,7 +11,7 @@
 </nav>
 <div class="m-10">
     <h1>{{ $institution->name }}</h1>
-    <h1>Total: Q. {{ number_format($institution->orders->sum("total"), 2) }}</h1>
+    <h1>Total: Q. {{ number_format($totalSum, 2) }}</h1>
     <h1>Rango de fechas: Desde {{ $dates['start_date'] }} hasta {{ $dates['end_date'] }}</h1>
 </div>
 <div class="m-10">
