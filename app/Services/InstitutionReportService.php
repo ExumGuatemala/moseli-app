@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Institution;
 use App\Models\Product;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Auth;
 
 class InstitutionReportService
 {
@@ -27,11 +28,13 @@ class InstitutionReportService
         ];
 
         $groupedOrders = [];
+        $totalSum = 0;
 
         foreach ($products as $product) {
             $groupedOrders[$product->id] = [
                 'product' => $product->name,
-                'orders' => []
+                'orders' => [],
+                'totals' => array_fill_keys($availableSizes, 0),
             ];
             $ordersByClient = [];
             foreach ($product->orders as $order) {
@@ -44,15 +47,22 @@ class InstitutionReportService
                     }
                 }
                 $ordersByClient[$order->client->id][$order->pivot->size] += $order->pivot->quantity;
+                $groupedOrders[$product->id]['totals'][$order->pivot->size] += $order->pivot->quantity;
+                $totalSum += $order->pivot->quantity;
             }
             $groupedOrders[$product->id]['orders'] = $ordersByClient;
         }     
+
+        $currentUser = Auth::user();
+        $institution = Institution::find($decrypted_institution_id);
+        $totalSumForSuperAdmin = $currentUser && $currentUser->hasRole('super_admin') ? $institution->orders->sum("total") : null;
         
         return [
-            'institution' => Institution::find($decrypted_institution_id),
+            'institution' => $institution,
             'orders' => $products->flatMap(function ($product) {
                 return $product->orders;
             }),
+            'totalSum' => $totalSumForSuperAdmin,
             'groupedOrders' => $groupedOrders,
             'dates' => [
                 'start_date' => $request->start_date,
