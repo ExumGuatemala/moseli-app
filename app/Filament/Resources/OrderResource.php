@@ -37,7 +37,7 @@ class OrderResource extends Resource
 {
     protected static ?string $model = Order::class;
 
-    protected static ?string $navigationGroup = 'Ventas';
+    protected static ?string $navigationGroup = 'Producción';
     protected static ?string $navigationIcon = 'heroicon-o-pencil-alt';
 
     protected static ?string $modelLabel = 'Orden';
@@ -127,7 +127,7 @@ class OrderResource extends Resource
                     ->disabled()
                     ->afterStateHydrated(function (TextInput $component, $state) {
                         if(!$state){
-                            $component->state(strtoupper(substr(bin2hex(random_bytes(ceil(8 / 2))), 0, 8)));
+                            $component->state(strtoupper(substr(bin2hex(random_bytes(8)), 0, 16)));
                         }
                     }),   
                 TextInput::make('created_at')
