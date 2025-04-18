@@ -17,8 +17,9 @@ return new class extends Migration
             $table->id();
             $table->string('key');
             $table->date('start_date')->nullable();
-            $table->date('end')->nullable();
+            $table->date('end_date')->nullable();
             $table->string('state_id');
+            $table->softDeletes();
             $table->timestamps();
         });
 
