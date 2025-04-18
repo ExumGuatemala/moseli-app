@@ -40,13 +40,13 @@ class InstitutionReportService
             foreach ($product->orders as $order) {
                 $colorIds = json_decode($order->pivot->colors, true); // Decode colors JSON
                 $firstColorId = is_array($colorIds) && count($colorIds) > 0 ? $colorIds[0] : null;
-
+            
                 if ($firstColorId) {
                     $colorName = ProductColor::find($firstColorId)?->name ?? 'Sin Color Especificado';
                 } else {
                     $colorName = 'Sin Color Especificado';
                 }
-
+            
                 if (!isset($groupedOrders[$product->id]['colors'][$colorName])) {
                     $groupedOrders[$product->id]['colors'][$colorName] = [
                         'color' => $colorName,
@@ -54,18 +54,25 @@ class InstitutionReportService
                         'totals' => array_fill_keys($availableSizes, 0),
                     ];
                 }
-
+            
                 $ordersByClient = &$groupedOrders[$product->id]['colors'][$colorName]['orders'];
-
+            
                 if (!isset($ordersByClient[$order->client->id])) {
                     $ordersByClient[$order->client->id] = [
                         'client' => $order->client->name,
+                        'embroidery' => '', // Initialize the "Bordado" column
                     ];
                     foreach ($availableSizes as $size) {
                         $ordersByClient[$order->client->id][$size] = 0;
                     }
                 }
-
+            
+                // Check for embroidery and append to the "Bordado" column
+                if ($order->pivot->has_embroidery || !is_null($order->pivot->embroidery)) {
+                    $embroideryText = "Bordado Talla {$order->pivot->size}: {$order->pivot->embroidery}";
+                    $ordersByClient[$order->client->id]['embroidery'] .= ($ordersByClient[$order->client->id]['embroidery'] ? ', ' : '') . $embroideryText;
+                }
+            
                 $ordersByClient[$order->client->id][$order->pivot->size] += $order->pivot->quantity;
                 $groupedOrders[$product->id]['colors'][$colorName]['totals'][$order->pivot->size] += $order->pivot->quantity;
                 $totalSum += $order->pivot->quantity;
