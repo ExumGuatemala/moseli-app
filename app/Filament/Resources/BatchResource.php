@@ -19,8 +19,6 @@ class BatchResource extends Resource
 {
     protected static ?string $model = Batch::class;
 
-    
-
     protected static ?string $navigationGroup = 'Producción';
     protected static ?string $navigationIcon = 'heroicon-o-collection';
 
@@ -108,7 +106,7 @@ class BatchResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\OrdersRelationManager::class,
         ];
     }
     

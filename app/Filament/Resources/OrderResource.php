@@ -139,7 +139,7 @@ class OrderResource extends Resource
                     ->afterStateHydrated(function (Model|null $record, Select $component) {
                         $order = $record == null ? $record : Order::find($record->id);
                         if(!$order){
-                            $orderStateIdForRecibida = OrderState::where('name', 'Recibida')->first()->id;
+                            $orderStateIdForRecibida = OrderState::where('process_order', 1)->first()->id;
                             $component->state($orderStateIdForRecibida);
                         } else {
                             $component->state($order->state_id);
