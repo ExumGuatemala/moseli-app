@@ -30,7 +30,7 @@ tr:nth-child(odd) {
     <img style="width: 100%;" src="https://moseli-media.nyc3.cdn.digitaloceanspaces.com/moseli-pdf-header.png" />
 </div>
 <div>
-    <h1>Orden #{{ $order->key }}</h1>
+    <h1>Orden #{{ $order->order_code }}</h1>
 </div>
 <div style="background-color: black; height: 1px; margin-bottom: 20px;"></div>
 <div>

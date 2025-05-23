@@ -16,7 +16,7 @@ class CreateOrder extends CreateRecord
     protected static string $resource = OrderResource::class;
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['key'] = self::$orderService->setAKey($data['key']);
+        $data['order_code'] = self::$orderService->setAKey($data['order_code']);
         return $data;
     }
 

@@ -33,7 +33,7 @@ class OrderRepository extends EloquentRepository
     }
 
     public function countByKey($key){
-        return Order::where('key', $key)->count();
+        return Order::where('order_code', $key)->count();
     }
     // public function updateById(int $id, array $attributes): bool
     // {

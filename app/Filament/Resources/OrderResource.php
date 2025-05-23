@@ -72,7 +72,7 @@ class OrderResource extends Resource
                             ->label("Correo Electrónico"),
                         TextInput::make('nit')
                             ->label('NIT'),
-                        TextInput::make('key')
+                        TextInput::make('order_code')
                             ->maxLength(255)
                             ->label("Código")
                             ->disabled()
@@ -122,7 +122,7 @@ class OrderResource extends Resource
                     ->required()
                     ->options(Branch::all()->pluck('name', 'id'))
                     ->relationship('branch', 'name'),
-                TextInput::make('key')
+                TextInput::make('order_code')
                     ->label("Código")
                     ->disabled()
                     ->afterStateHydrated(function (TextInput $component, $state) {
@@ -183,8 +183,6 @@ class OrderResource extends Resource
                     ->getStateUsing(function (Model $record) {
                         return $record->state->name;
                     }),
-                TextColumn::make('key')
-                    ->label("Código"),
                 TextColumn::make('client_id')
                     ->label('Cliente')
                     ->searchable(query: function (Builder $query, string $search): Builder {
@@ -196,9 +194,9 @@ class OrderResource extends Resource
                     ->getStateUsing(function (Model $record) {
                         return $record->client->name;
                     }),
-                TextColumn::make('key')
+                TextColumn::make('order_code')
                     ->label("Código")
-                    ->searchable(['key']),
+                    ->searchable(['order_code']),
                 TextColumn::make('total')
                     ->money('gtq', true),
                 TextColumn::make('branch_id')
