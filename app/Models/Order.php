@@ -21,7 +21,7 @@ class Order extends Model implements HasMedia
         'client_id',
         'institution_id',
         'description',
-        'key',
+        'order_code',
         'finish_date',
     ];
 

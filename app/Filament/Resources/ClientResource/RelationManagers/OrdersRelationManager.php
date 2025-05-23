@@ -17,7 +17,7 @@ class OrdersRelationManager extends RelationManager
 {
     protected static string $relationship = 'orders';
 
-    protected static ?string $recordTitleAttribute = 'key';
+    protected static ?string $recordTitleAttribute = 'order_code';
     protected static ?string $navigationLabel = 'Ordenes';
     protected static ?string $pluralModelLabel = 'Ordenes';
 
@@ -25,7 +25,7 @@ class OrdersRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('key')
+                Forms\Components\TextInput::make('order_code')
                     ->required()
                     ->maxLength(255),
             ]);
@@ -35,7 +35,9 @@ class OrdersRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                TextColumn::make('key'),
+                TextColumn::make('order_code')
+                    ->label('Código de Orden')
+                    ->searchable(),
                 TextColumn::make('total')
                     ->money('gtq', true),
                 TextColumn::make('branch_id')

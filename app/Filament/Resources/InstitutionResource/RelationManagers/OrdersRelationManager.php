@@ -38,7 +38,7 @@ class OrdersRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                TextColumn::make('key')
+                TextColumn::make('order_code')
                     ->label("Código"),
                 TextColumn::make('client_id')
                     ->label('Cliente')
