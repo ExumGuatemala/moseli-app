@@ -72,7 +72,7 @@ class OrderResource extends Resource
                             ->label("Correo Electrónico"),
                         TextInput::make('nit')
                             ->label('NIT'),
-                        TextInput::make('order_code')
+                        TextInput::make('key')
                             ->maxLength(255)
                             ->label("Código")
                             ->disabled()
