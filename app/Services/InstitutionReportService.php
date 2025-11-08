@@ -67,14 +67,21 @@ class InstitutionReportService
                     }
                 }
             
+                // New requirement: some pivot items might not have a size. Skip those items.
+                $size = $order->pivot->size ?? null;
+                if (is_null($size) || $size === '') {
+                    // Skip products that do not have a size per new business rule
+                    continue;
+                }
+
                 // Check for embroidery and append to the "Bordado" column
                 if ($order->pivot->has_embroidery || !is_null($order->pivot->embroidery)) {
-                    $embroideryText = "Bordado Talla {$order->pivot->size}: {$order->pivot->embroidery}";
+                    $embroideryText = "Bordado Talla {$size}: {$order->pivot->embroidery}";
                     $ordersByClient[$order->client->id]['embroidery'] .= ($ordersByClient[$order->client->id]['embroidery'] ? ', ' : '') . $embroideryText;
                 }
-            
-                $ordersByClient[$order->client->id][$order->pivot->size] += $order->pivot->quantity;
-                $groupedOrders[$product->id]['colors'][$colorName]['totals'][$order->pivot->size] += $order->pivot->quantity;
+
+                $ordersByClient[$order->client->id][$size] += $order->pivot->quantity;
+                $groupedOrders[$product->id]['colors'][$colorName]['totals'][$size] += $order->pivot->quantity;
                 $totalSum += $order->pivot->quantity;
             }
         }
