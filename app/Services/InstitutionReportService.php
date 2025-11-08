@@ -89,7 +89,7 @@ class InstitutionReportService
         $currentUser = Auth::user();
         $institution = Institution::find($decrypted_institution_id);
         $totalSumForSuperAdmin = null;
-        if ($currentUser && $currentUser->hasRole('super_admin')) {
+        if ($currentUser && $currentUser->hasRole('Administrador')) {
             $totalSumForSuperAdmin = $institution->orders()
                 ->whereBetween('created_at', [$request->start_date, $request->end_date])
                 ->sum('total');
