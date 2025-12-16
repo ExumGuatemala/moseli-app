@@ -44,7 +44,7 @@ class Product extends Model implements HasMedia
      */
     public function orders()
     {
-        return $this->belongsToMany(Order::class, 'orders_products', 'product_id', 'order_id')->withPivot('id','quantity', 'sublimate','size','embroidery','has_embroidery','has_sublimate', 'colors');
+        return $this->belongsToMany(Order::class, 'orders_products', 'product_id', 'order_id')->withPivot('id','quantity', 'sublimate','size','embroidery','has_embroidery','has_sublimate','special_size','has_special_size','colors');
     }
 
     /**

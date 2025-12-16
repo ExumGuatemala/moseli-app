@@ -15,15 +15,20 @@ class OrderProduct extends Model
         'order_id',
         'product_id',
         'size',
+        'has_embroidery',
         'embroidery',
+        'has_sublimate',
         'sublimate',
-        'quantity'
+        'quantity',
+        'has_special_size',
+        'special_size',
     ];
 
     protected $casts = [
         'colors' => 'array',
         'has_embroidery' => 'boolean',
         'has_sublimate' => 'boolean',
+        'has_special_size' => 'boolean',
     ];
 
     public function products()
