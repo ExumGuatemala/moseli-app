@@ -192,8 +192,6 @@ class ProductsRelationManager extends RelationManager
                                 'XXL' => 'XXL',
                                 '3XL' => '3XL',
                                 '4XL' => '4XL',
-                                
-
                             ]),
                         Select::make('colors')
                             ->multiple()
@@ -214,6 +212,14 @@ class ProductsRelationManager extends RelationManager
                             ->label('Texto de sublimado')
                             ->hidden(
                                 fn (Closure $get): bool => $get('has_sublimate') == false
+                            ),
+                        Toggle::make('has_special_size')->inline()
+                            ->label('Agregar talla especial?')
+                            ->reactive(),
+                        Textarea::make('special_size')
+                            ->label('Detalles de talla especial')
+                            ->hidden(
+                                fn (Closure $get): bool => $get('has_special_size') == false
                             ),
                     ])
                     ->mutateFormDataUsing(function (array $data): array {
@@ -297,6 +303,14 @@ class ProductsRelationManager extends RelationManager
                                 ->label('Texto de sublimado')
                                 ->hidden(
                                     fn (Closure $get): bool => $get('has_sublimate') == false
+                                ),
+                            Toggle::make('has_special_size')->inline()
+                                ->label('Agregar talla especial?')
+                                ->reactive(),
+                            Textarea::make('special_size')
+                                ->label('Detalles de talla especial')
+                                ->hidden(
+                                    fn (Closure $get): bool => $get('has_special_size') == false
                                 ),
                         ])
                         ->mutateFormDataUsing(function (array $data): array {
