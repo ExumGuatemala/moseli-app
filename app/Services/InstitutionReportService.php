@@ -61,12 +61,13 @@ class InstitutionReportService
                     $ordersByClient[$order->client->id] = [
                         'client' => $order->client->name,
                         'embroidery' => '', // Initialize the "Bordado" column
+                        'special_size' => '', // Initialize the "Talla Especial" column
                     ];
                     foreach ($availableSizes as $size) {
                         $ordersByClient[$order->client->id][$size] = 0;
                     }
                 }
-            
+
                 // New requirement: some pivot items might not have a size. Skip those items.
                 $size = $order->pivot->size ?? null;
                 if (is_null($size) || $size === '') {
@@ -78,6 +79,12 @@ class InstitutionReportService
                 if ($order->pivot->has_embroidery || !is_null($order->pivot->embroidery)) {
                     $embroideryText = "Bordado Talla {$size}: {$order->pivot->embroidery}";
                     $ordersByClient[$order->client->id]['embroidery'] .= ($ordersByClient[$order->client->id]['embroidery'] ? ', ' : '') . $embroideryText;
+                }
+                // Check for special size and append to the "Talla Especial" column
+                if ($order->pivot->has_special_size || !is_null($order->pivot->special_size)) {
+                    
+                    $specialSizeText = "Talla Especial Talla {$size}: {$order->pivot->special_size}";
+                    $ordersByClient[$order->client->id]['special_size'] .= ($ordersByClient[$order->client->id]['special_size'] ? ', ' : '') . $specialSizeText;
                 }
 
                 $ordersByClient[$order->client->id][$size] += $order->pivot->quantity;
