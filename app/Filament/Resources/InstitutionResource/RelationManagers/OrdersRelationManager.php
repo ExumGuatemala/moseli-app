@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+use App\Services\OrderStateService;
+
 class OrdersRelationManager extends RelationManager
 {
     protected static string $relationship = 'orders';
@@ -60,6 +62,10 @@ class OrdersRelationManager extends RelationManager
                     ->label("Fecha de Creación"),
             ])
             ->filters([
+                Filter::make('delivered')
+                    ->label("Ocultar Entregadas")
+                    ->default()
+                    ->query(fn (Builder $query): Builder => $query->whereNot('state_id', OrderStateService::getLastOrderState()->id)),
                 Filter::make('created_at')
                     ->form([
                         Forms\Components\DatePicker::make('created_from')
