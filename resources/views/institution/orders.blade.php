@@ -28,6 +28,7 @@
                         <tr>
                             <th class="whitespace-nowrap py-3 pl-3 text-sm font-normal text-[#212B36]" width="15%">Client</th>
                             <th class="py-3 text-sm font-normal text-[#212B36]" width="10%" style="width: 150px; word-wrap: break-word;">Bordado</th>
+                            <th class="py-3 text-sm font-normal text-[#212B36]" width="10%" style="width: 150px; word-wrap: break-word;">Talla Especial</th>
                             @foreach ($availableSizes as $size)
                                 <th class="whitespace-nowrap py-3 text-sm font-normal text-[#212B36] text-center" width="5%">{{ $size }}</th> <!-- Center align -->
                             @endforeach
@@ -38,6 +39,7 @@
                             <tr>
                                 <td class="whitespace-nowrap py-3 pl-3 text-sm font-normal text-[#212B36]">{{ $order['client'] }}</td>
                                 <td class="py-3 text-sm font-normal text-[#212B36]" style="width: 150px; word-wrap: break-word;">{{ $order['embroidery'] ?? 'N/A' }}</td>
+                                <td class="py-3 text-sm font-normal text-[#212B36]" style="width: 150px; word-wrap: break-word;">{{ $order['special_size'] ?? 'N/A' }}</td>
                                 @foreach ($availableSizes as $size)
                                     <td class="whitespace-nowrap py-3 text-sm font-normal text-[#212B36] text-center">
                                         {{ $order[$size] ?? 0 }}
@@ -47,6 +49,7 @@
                         @endforeach
                         <tr class="bg-gray-100">
                             <td class="whitespace-nowrap py-3 pl-3 text-sm font-bold text-[#212B36]">Totales</td>
+                            <td class="py-3 text-sm font-bold text-[#212B36]" style="width: 150px;">-</td>
                             <td class="py-3 text-sm font-bold text-[#212B36]" style="width: 150px;">-</td>
                             @foreach ($availableSizes as $size)
                                 <td class="whitespace-nowrap py-3 text-sm font-bold text-[#212B36] text-center">
