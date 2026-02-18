@@ -9,6 +9,7 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Image\Manipulations;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model implements HasMedia
 {
@@ -44,7 +45,7 @@ class Product extends Model implements HasMedia
      */
     public function orders()
     {
-        return $this->belongsToMany(Order::class, 'orders_products', 'product_id', 'order_id')->withPivot('id','quantity', 'sublimate','size','embroidery','has_embroidery','has_sublimate','special_size','has_special_size','colors');
+        return $this->belongsToMany(Order::class, 'orders_products', 'product_id', 'order_id')->withPivot('id', 'quantity', 'sublimate', 'size', 'embroidery', 'has_embroidery', 'has_sublimate', 'special_size', 'has_special_size', 'colors');
     }
 
     /**
@@ -53,6 +54,11 @@ class Product extends Model implements HasMedia
     public function institution()
     {
         return $this->belongsTo(Institution::class);
+    }
+
+    public function parts(): HasMany
+    {
+        return $this->hasMany(ProductPart::class);
     }
 
     public function registerMediaConversions(Media $media = null): void
