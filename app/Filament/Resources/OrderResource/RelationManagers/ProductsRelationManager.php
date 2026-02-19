@@ -108,10 +108,15 @@ class ProductsRelationManager extends RelationManager
                 ->default(1),
             Select::make('size')
                 ->label('Talla')
-                ->afterStateHydrated(function (Model|null $record, Select $component) {
-                    $record == null ? $component->state(null) : $component->state($record->size);
-                })
-                ->options(self::sizeOptions()),
+                ->options(self::sizeOptions())
+                ->reactive()
+                ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                    $parts = $get('parts') ?? [];
+                    foreach ($parts as $i => $part) {
+                        $parts[$i]['size'] = $state;
+                    }
+                    $set('parts', $parts);
+                }),
             Toggle::make('has_embroidery')->inline()
                 ->label('Agregar bordado?')
                 ->reactive(),
@@ -187,19 +192,19 @@ class ProductsRelationManager extends RelationManager
                     ->form(fn(AttachAction $action): array => [
                         $action->getRecordSelect()
                             ->reactive()
-                            ->afterStateUpdated(function ($state, callable $set) {
+                            ->afterStateUpdated(function ($state, callable $set, callable $get) {
                                 if (!$state) {
                                     $set('parts', []);
                                     return;
                                 }
-
+                                $generalSize = $get('size');
                                 $parts = ProductPart::query()
                                     ->where('product_id', $state)
                                     ->get(['id', 'name'])
                                     ->map(fn($p) => [
                                         'product_part_id' => $p->id,
                                         'part_name'       => $p->name,
-                                        'size'            => null,
+                                        'size'            => $generalSize ?: null,
                                         'color_id'        => null,
                                     ])
                                     ->toArray();
@@ -214,7 +219,18 @@ class ProductsRelationManager extends RelationManager
 
                         Select::make('size')
                             ->label('Talla')
-                            ->options(self::sizeOptions()),
+                            ->options(self::sizeOptions())
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                                $parts = $get('parts') ?? [];
+                                foreach ($parts as $i => $part) {
+                                    if (empty($part['size'])) {
+                                        $parts[$i]['size'] = $state;
+                                    }
+                                }
+
+                                $set('parts', $parts);
+                            }),
 
                         Repeater::make('parts')
                             ->label('Partes del producto')
@@ -229,14 +245,16 @@ class ProductsRelationManager extends RelationManager
 
                                 Select::make('size')
                                     ->label('Talla')
-                                    ->required()
-                                    ->options(self::sizeOptions()),
-                                Select::make('color_id')
-                                    ->label('Color')
-                                    ->required()
-                                    ->options(\App\Models\ProductColor::query()->pluck('name', 'id')->toArray())
-                                    ->searchable()
-                                    ->preload(),
+                                    ->options(self::sizeOptions())
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                                        $parts = $get('parts') ?? [];
+                                        foreach ($parts as $i => $part) {
+                                            $parts[$i]['size'] = $state;
+                                        }
+
+                                        $set('parts', $parts);
+                                    }),
                             ])
                             ->columns(2)
                             ->defaultItems(0)
@@ -332,12 +350,14 @@ class ProductsRelationManager extends RelationManager
                             Repeater::make('parts')
                                 ->label('Partes del producto')
                                 ->itemLabel(fn(array $state): ?string => $state['part_name'] ?? 'Parte')
-                                ->afterStateHydrated(function (callable $set, Model $record) {
+                                ->afterStateHydrated(function (callable $set, callable $get, Model $record) {
                                     $orderProductId = $record->pivot->id ?? null;
                                     if (! $orderProductId) {
                                         $set('parts', []);
                                         return;
                                     }
+
+                                    $generalSize = $get('size');
 
                                     $rows = \App\Models\OrderProductPart::query()
                                         ->where('order_product_id', $orderProductId)
@@ -346,8 +366,7 @@ class ProductsRelationManager extends RelationManager
                                         ->map(fn($r) => [
                                             'product_part_id' => $r->product_part_id,
                                             'part_name'       => $r->productPart?->name,
-                                            'size'            => $r->size,
-                                            'color_name'      => $r->color?->name,
+                                            'size'            => $generalSize ?: null,
                                         ])
                                         ->toArray();
 
@@ -365,15 +384,65 @@ class ProductsRelationManager extends RelationManager
                                         ->label('Talla')
                                         ->disabled()
                                         ->dehydrated(false),
-
-                                    TextInput::make('color_name')
-                                        ->label('Color')
-                                        ->disabled()
-                                        ->dehydrated(false),
                                 ])
                                 ->columns(3)
                                 ->orderable(false)
+                                // ->deletable(false)
                                 ->columnSpan('full'),
+                            TextInput::make('quantity')
+                                ->label('Cantidad a comprar')
+                                ->required()
+                                ->default(1),
+                            Select::make('size')
+                                ->label('Talla')
+                                ->afterStateHydrated(function (Model|null $record, Select $component) {
+                                    $record == null ? $component->state(null) : $component->state($record->size);
+                                })
+                                ->options([
+                                    '2' => '2',
+                                    '4' => '4',
+                                    '6' => '6',
+                                    '8' => '8',
+                                    '10' => '10',
+                                    '12' => '12',
+                                    '14' => '14',
+                                    'XS' => 'XS',
+                                    'S' => 'S',
+                                    'M' => 'M',
+                                    'L' => 'L',
+                                    'XL' => 'XL',
+                                    'XXL' => 'XXL',
+                                    '3XL' => '3XL',
+                                    '4XL' => '4XL',
+                                ]),
+                            Select::make('colors')
+                                ->multiple()
+                                ->label('Color')
+                                ->options(ProductColor::all()->pluck('name', 'id')),
+                            Toggle::make('has_embroidery')->inline()
+                                ->label('Agregar bordado?')
+                                ->reactive(),
+                            TextInput::make('embroidery')
+                                ->label('Texto de Bordado')
+                                ->hidden(
+                                    fn(Closure $get): bool => $get('has_embroidery') == false
+                                ),
+                            Toggle::make('has_sublimate')->inline()
+                                ->label('Agregar sublimado?')
+                                ->reactive(),
+                            TextInput::make('sublimate')
+                                ->label('Texto de sublimado')
+                                ->hidden(
+                                    fn(Closure $get): bool => $get('has_sublimate') == false
+                                ),
+                            Toggle::make('has_special_size')->inline()
+                                ->label('Agregar talla especial?')
+                                ->reactive(),
+                            Textarea::make('special_size')
+                                ->label('Detalles de talla especial')
+                                ->hidden(
+                                    fn(Closure $get): bool => $get('has_special_size') == false
+                                ),
                         ]),
 
                     EditAction::make()
@@ -394,10 +463,18 @@ class ProductsRelationManager extends RelationManager
                                 ->label('Cantidad a comprar')
                                 ->required()
                                 ->default(1),
-
                             Select::make('size')
                                 ->label('Talla')
-                                ->options(self::sizeOptions()),
+                                ->options(self::sizeOptions())
+                                ->reactive()
+                                ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                                    $parts = $get('parts') ?? [];
+                                    foreach ($parts as $i => $part) {
+                                        $parts[$i]['size'] = $state;
+                                    }
+
+                                    $set('parts', $parts);
+                                }),
 
                             Repeater::make('parts')
                                 ->label('Partes del producto')
@@ -430,8 +507,16 @@ class ProductsRelationManager extends RelationManager
 
                                     Select::make('size')
                                         ->label('Talla')
-                                        ->required()
-                                        ->options(self::sizeOptions()),
+                                        ->options(self::sizeOptions())
+                                        ->reactive()
+                                        ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                                            $parts = $get('parts') ?? [];
+                                            foreach ($parts as $i => $part) {
+                                                $parts[$i]['size'] = $state;
+                                            }
+
+                                            $set('parts', $parts);
+                                        }),
 
                                     Select::make('color_id')
                                         ->label('Color')
@@ -443,6 +528,7 @@ class ProductsRelationManager extends RelationManager
                                 ->columns(2)
                                 ->defaultItems(0)
                                 ->orderable(false)
+                                // ->deletable(false)
                                 ->columnSpan('full'),
 
                             Select::make('colors')

@@ -89,14 +89,12 @@
                     <tr>
                         <th style="width:50%; background:#f2f2f2;">Parte</th>
                         <th style="width:25%; background:#f2f2f2;">Talla</th>
-                        <th style="width:25%; background:#f2f2f2;">Color</th>
                     </tr>
 
                     @foreach($product->order_parts as $part)
                     <tr>
                         <td>{{ $part->productPart->name ?? 'Parte' }}</td>
                         <td style="text-align:center;">{{ $part->size ?? '-' }}</td>
-                        <td style="text-align:center;">{{ $part->color->name ?? '-' }}</td>
                     </tr>
                     @endforeach
                 </table>
