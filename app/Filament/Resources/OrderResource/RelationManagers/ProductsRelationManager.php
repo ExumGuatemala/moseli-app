@@ -258,7 +258,10 @@ class ProductsRelationManager extends RelationManager
                             ])
                             ->columns(2)
                             ->defaultItems(0)
+                            ->disableItemDeletion()
+                            ->disableItemDeletion()
                             ->orderable(false)
+                            ->hidden(fn (Closure $get): bool => $get('has_special_size') == false)
                             ->columnSpan('full'),
 
                         Select::make('colors')
@@ -386,14 +389,17 @@ class ProductsRelationManager extends RelationManager
                                         ->dehydrated(false),
                                 ])
                                 ->columns(3)
+                                ->disableItemDeletion()
+                                ->disableItemDeletion()
                                 ->orderable(false)
                                 // ->deletable(false)
+                                // ->hidden(fn (Closure $get): bool => $get('has_special_size') == false)
                                 ->columnSpan('full'),
-                            TextInput::make('quantity')
+                                TextInput::make('quantity')
                                 ->label('Cantidad a comprar')
                                 ->required()
                                 ->default(1),
-                            Select::make('size')
+                                Select::make('size')
                                 ->label('Talla')
                                 ->afterStateHydrated(function (Model|null $record, Select $component) {
                                     $record == null ? $component->state(null) : $component->state($record->size);
@@ -425,7 +431,7 @@ class ProductsRelationManager extends RelationManager
                             TextInput::make('embroidery')
                                 ->label('Texto de Bordado')
                                 ->hidden(
-                                    fn(Closure $get): bool => $get('has_embroidery') == false
+                                    fn (Closure $get): bool => $get('has_embroidery') == false
                                 ),
                             Toggle::make('has_sublimate')->inline()
                                 ->label('Agregar sublimado?')
@@ -433,7 +439,7 @@ class ProductsRelationManager extends RelationManager
                             TextInput::make('sublimate')
                                 ->label('Texto de sublimado')
                                 ->hidden(
-                                    fn(Closure $get): bool => $get('has_sublimate') == false
+                                    fn (Closure $get): bool => $get('has_sublimate') == false
                                 ),
                             Toggle::make('has_special_size')->inline()
                                 ->label('Agregar talla especial?')
@@ -441,7 +447,7 @@ class ProductsRelationManager extends RelationManager
                             Textarea::make('special_size')
                                 ->label('Detalles de talla especial')
                                 ->hidden(
-                                    fn(Closure $get): bool => $get('has_special_size') == false
+                                    fn (Closure $get): bool => $get('has_special_size') == false
                                 ),
                         ]),
 
@@ -490,8 +496,7 @@ class ProductsRelationManager extends RelationManager
                                         ->map(fn($r) => [
                                             'product_part_id' => $r->product_part_id,
                                             'part_name'       => $r->productPart?->name,
-                                            'size'            => $r->size,
-                                            'color_id'        => $r->color_id ?? null,
+                                            'size'            => $r->size
                                         ])
                                         ->toArray();
 
@@ -517,18 +522,13 @@ class ProductsRelationManager extends RelationManager
 
                                             $set('parts', $parts);
                                         }),
-
-                                    Select::make('color_id')
-                                        ->label('Color')
-                                        ->required()
-                                        ->options(\App\Models\ProductColor::query()->pluck('name', 'id')->toArray())
-                                        ->searchable()
-                                        ->preload(),
                                 ])
                                 ->columns(2)
                                 ->defaultItems(0)
                                 ->orderable(false)
-                                // ->deletable(false)
+                                ->hidden(fn (Closure $get): bool => $get('has_special_size') == false)
+                                ->disableItemDeletion()
+                                ->disableItemDeletion()
                                 ->columnSpan('full'),
 
                             Select::make('colors')

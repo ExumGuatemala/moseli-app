@@ -87,7 +87,7 @@
             <td colspan="5" style="padding: 0;">
                 <table style="width: 100%; border-collapse: collapse; margin: 0;">
                     <tr>
-                        <th style="width:50%; background:#f2f2f2;">Parte</th>
+                        <th style="width:50%; background:#f2f2f2;">Talla Especial</th>
                         <th style="width:25%; background:#f2f2f2;">Talla</th>
                     </tr>
 

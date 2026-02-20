@@ -84,6 +84,7 @@ class ProductResource extends Resource
                     ->enableOpen()
                     ->visibility('public'),
                 Section::make('Partes del producto')
+                    ->label('Talla Especial')
                     ->schema([
                         Repeater::make('parts')
                             ->relationship('parts')
