@@ -83,12 +83,12 @@ class ProductResource extends Resource
                     ->enableReordering()
                     ->enableOpen()
                     ->visibility('public'),
-                Section::make('Partes del producto')
-                    ->label('Talla Especial')
+                Section::make('Tallas del producto')
+                    ->label('Tallas de producto')
                     ->schema([
                         Repeater::make('parts')
                             ->relationship('parts')
-                            ->label('Partes')
+                            ->label('Tallas')
                             ->schema([
                                 TextInput::make('name')
                                     ->label('Nombre')

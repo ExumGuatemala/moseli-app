@@ -233,7 +233,7 @@ class ProductsRelationManager extends RelationManager
                             }),
 
                         Repeater::make('parts')
-                            ->label('Partes del producto')
+                            ->label('Tallas del Producto')
                             ->itemLabel(fn(array $state): ?string => $state['part_name'] ?? 'Parte')
                             ->schema([
                                 Hidden::make('product_part_id')->required(),
@@ -379,7 +379,7 @@ class ProductsRelationManager extends RelationManager
                                     '4XL' => '4XL',
                                 ]),
                             Repeater::make('parts')
-                                ->label('Partes del producto')
+                                ->label('Tallas del Producto')
                                 ->itemLabel(fn(array $state): ?string => $state['part_name'] ?? 'Parte')
                                 ->afterStateHydrated(function (callable $set, callable $get, Model $record) {
                                     $orderProductId = $record->pivot->id ?? null;
@@ -484,7 +484,7 @@ class ProductsRelationManager extends RelationManager
                                 }),
 
                             Repeater::make('parts')
-                                ->label('Partes del producto')
+                                ->label('Tallas del Producto')
                                 ->itemLabel(fn(array $state): ?string => $state['part_name'] ?? 'Parte')
                                 ->afterStateHydrated(function (callable $set, Model $record) {
                                     $orderProductId = $record->pivot->id ?? null;
