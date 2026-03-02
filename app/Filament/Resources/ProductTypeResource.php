@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ProductTypeResource\Pages;
 use App\Filament\Resources\ProductTypeResource\RelationManagers;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Repeater;
 use Filament\Tables\Columns\TextColumn;
 use App\Models\ProductType;
 use Filament\Forms;
@@ -34,6 +35,20 @@ class ProductTypeResource extends Resource
                     ->required()
                     ->label('Nombre')
                     ->maxLength(255),
+
+                Repeater::make('features')
+                ->label('Características')
+                    ->relationship()
+                    ->schema([
+                        TextInput::make('name')
+                            ->label('Nombre')
+                            ->required(),
+
+                        TextInput::make('size')
+                            ->label('Tamaño'),
+                    ])
+                    ->columns(1),
+                    // ->addActionLabel('Add Feature')
             ]);
     }
 
