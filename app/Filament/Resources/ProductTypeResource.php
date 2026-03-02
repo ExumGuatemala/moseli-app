@@ -37,7 +37,7 @@ class ProductTypeResource extends Resource
                     ->maxLength(255),
 
                 Repeater::make('features')
-                ->label('Características')
+                ->label('Detalles de tipo de producto')
                     ->relationship()
                     ->schema([
                         TextInput::make('name')
