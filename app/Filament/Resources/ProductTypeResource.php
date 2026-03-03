@@ -15,6 +15,18 @@ use Filament\Resources\Table;
 use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Models\SizeByProduct;
+use Filament\Notifications\Notification;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Set;
+use Filament\Forms\Get;
+use Filament\Forms\Components\ViewField;
+use Filament\Forms\Components\Select;
+use Illuminate\Support\HtmlString;
+use Closure;
 
 class ProductTypeResource extends Resource
 {
@@ -37,7 +49,7 @@ class ProductTypeResource extends Resource
                     ->maxLength(255),
 
                 Repeater::make('features')
-                ->label('Detalles de tipo de producto')
+                    ->label('Detalles de tipo de producto')
                     ->relationship()
                     ->schema([
                         TextInput::make('name')
@@ -48,7 +60,38 @@ class ProductTypeResource extends Resource
                             ->label('Tamaño'),
                     ])
                     ->columns(1),
-                    // ->addActionLabel('Add Feature')
+
+                Placeholder::make('size_presets')
+                    ->label('') // sin label para que no estorbe
+                    ->content(new HtmlString('
+        <div class="flex gap-2">
+            <button type="button"
+                class="px-3 py-2 rounded bg-primary-600 text-white"
+                wire:click.prevent="generateSizePreset(\'shirts\')">
+                Generar tallas camisas
+            </button>
+
+            <button type="button"
+                class="px-3 py-2 rounded bg-gray-600 text-white"
+                wire:click.prevent="generateSizePreset(\'pants\')">
+                Generar tallas pantalón
+            </button>
+        </div>
+        <p class="text-sm text-gray-500 mt-2">
+            Esto llena las tallas automáticamente; luego podés reordenarlas.
+        </p>
+    '))
+                    ->columnSpan('full'),
+                Repeater::make('sizes')
+                    ->label('Tallas')
+                    ->relationship()
+                    ->schema([
+                        TextInput::make('name')->label('Talla')->required(),
+                        TextInput::make('sort_order')->hidden()->dehydrated(),
+                    ])
+                    ->defaultItems(0)
+                    ->reorderableWithButtons()           // drag & drop
+                    ->columns(2)
             ]);
     }
 
@@ -71,7 +114,7 @@ class ProductTypeResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),

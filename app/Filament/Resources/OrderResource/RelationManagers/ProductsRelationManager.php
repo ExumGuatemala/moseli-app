@@ -25,6 +25,8 @@ use Filament\Tables\Actions\ViewAction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Models\Product;
+use App\Models\SizeByProduct;
 
 class ProductsRelationManager extends RelationManager
 {
@@ -38,7 +40,8 @@ class ProductsRelationManager extends RelationManager
 
     protected static $orderService;
 
-    public function __construct() {
+    public function __construct()
+    {
         static::$orderService = new OrderService();
     }
 
@@ -53,13 +56,13 @@ class ProductsRelationManager extends RelationManager
                     ->label("Nombre"),
                 TextInput::make('sale_price')
                     ->required()
-                    ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2))
+                    ->mask(fn(TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2))
                     ->label("Precio de Venta"),
                 TextInput::make('existence')
                     ->numeric()
                     ->label("Existencia")
                     ->afterStateHydrated(function (TextInput $component, $state) {
-                        if(!$state){
+                        if (!$state) {
                             $component->state(1);
                         }
                     }),
@@ -80,37 +83,34 @@ class ProductsRelationManager extends RelationManager
                     ->default(1),
                 Select::make('size')
                     ->label('Talla')
-                    ->afterStateHydrated(function (Model|null $record, Select $component) {
-                        $record == null ? $component->state(null) : $component->state($record->size);
+                    ->options(function (callable $get) {
+                        // En AttachAction, el producto seleccionado normalmente queda en "recordId"
+                        $productId = $get('recordId');
+
+                        if (!$productId) {
+                            return [];
+                        }
+
+                        $typeId = Product::find($productId)?->type_id;
+
+                        if (!$typeId) {
+                            return [];
+                        }
+
+                        return SizeByProduct::where('product_type_id', $typeId)
+                            ->orderBy('sort_order')
+                            ->pluck('name', 'name')
+                            ->toArray();
                     })
-                    ->options([
-                        '2' => '2',
-                        '4' => '4',
-                        '6' => '6',
-                        '8' => '8',
-                        '10' => '10',
-                        '12' => '12',
-                        '14' => '14',
-                        'XS' => 'XS',
-                        'S' => 'S',
-                        'M' => 'M',
-                        'L' => 'L',
-                        'XL' => 'XL',
-                        'XXL' => 'XXL',
-                        '3XL' => '3XL',
-                        '4XL' => '4XL',
-                    ]),
-                // Select::make('colors')
-                //     ->multiple()
-                //     ->label('Color')
-                //     ->options(ProductColor::all()->pluck('name', 'id')),
+                    ->searchable()
+                    ->preload(),
                 Toggle::make('has_embroidery')->inline()
                     ->label('Agregar bordado?')
                     ->reactive(),
                 TextInput::make('embroidery')
                     ->label('Texto de Bordado')
                     ->hidden(
-                        fn (Closure $get): bool => $get('has_embroidery') == false
+                        fn(Closure $get): bool => $get('has_embroidery') == false
                     ),
                 Toggle::make('has_sublimate')->inline()
                     ->label('Agregar sublimado?')
@@ -118,7 +118,7 @@ class ProductsRelationManager extends RelationManager
                 TextInput::make('sublimate')
                     ->label('Texto de sublimado')
                     ->hidden(
-                        fn (Closure $get): bool => $get('has_sublimate') == false
+                        fn(Closure $get): bool => $get('has_sublimate') == false
                     ),
             ]);
     }
@@ -138,10 +138,10 @@ class ProductsRelationManager extends RelationManager
                     ->label("Colores")
                     ->getStateUsing(function (Model $record): String {
                         $result = "";
-                        if($record->colors != null) {
+                        if ($record->colors != null) {
                             foreach ($record->colors as $value) {
                                 $result = $result . ProductColor::find($value)->name . ', ';
-                              }
+                            }
                         }
                         return $result;
                     })
@@ -160,76 +160,91 @@ class ProductsRelationManager extends RelationManager
             ])
             ->headerActions([
                 AttachAction::make()
-                ->label('Agregar Producto')
-                ->slideOver()
-                ->modalWidth('4xl')
-                ->modalHeading('Agregar Producto')
-                ->modalButton('Guardar')
-                    ->form(fn (AttachAction $action): array => [
-                        $action->getRecordSelect(),
+                    ->label('Agregar Producto')
+                    ->slideOver()
+                    ->modalWidth('4xl')
+                    ->modalHeading('Agregar Producto')
+                    ->modalButton('Guardar')
+                    ->form(fn(AttachAction $action): array => [
+
+                        $action->getRecordSelect()
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                // guardamos el producto seleccionado en un campo estable
+                                $set('product_id', $state);
+
+                                // reseteamos la talla al cambiar producto
+                                $set('size', null);
+                            }),
+
+                        Forms\Components\Hidden::make('product_id'),
+
                         TextInput::make('quantity')
                             ->label('Cantidad a comprar')
                             ->required()
                             ->default(1),
+
                         Select::make('size')
                             ->label('Talla')
-                            ->afterStateHydrated(function (Model|null $record, Select $component) {
-                                $record == null ? $component->state(null) : $component->state($record->size);
+                            ->options(function (callable $get) {
+                                $productId = $get('product_id');
+
+                                if (! $productId) {
+                                    return [];
+                                }
+
+                                $typeId = Product::query()->whereKey($productId)->value('type_id');
+
+                                if (! $typeId) {
+                                    return [];
+                                }
+
+                                return SizeByProduct::where('product_type_id', $typeId)
+                                    ->orderBy('sort_order')
+                                    ->pluck('name', 'name')
+                                    ->toArray();
                             })
-                            ->options([
-                                '2' => '2',
-                                '4' => '4',
-                                '6' => '6',
-                                '8' => '8',
-                                '10' => '10',
-                                '12' => '12',
-                                '14' => '14',
-                                'XS' => 'XS',
-                                'S' => 'S',
-                                'M' => 'M',
-                                'L' => 'L',
-                                'XL' => 'XL',
-                                'XXL' => 'XXL',
-                                '3XL' => '3XL',
-                                '4XL' => '4XL',
-                            ]),
+                            ->searchable()
+                            ->preload(),
+
                         Select::make('colors')
                             ->multiple()
                             ->label('Color')
                             ->options(ProductColor::all()->pluck('name', 'id')),
+
                         Toggle::make('has_embroidery')->inline()
                             ->label('Agregar bordado?')
                             ->reactive(),
+
                         TextInput::make('embroidery')
                             ->label('Texto de Bordado')
-                            ->hidden(
-                                fn (Closure $get): bool => $get('has_embroidery') == false
-                            ),
+                            ->hidden(fn(Closure $get): bool => $get('has_embroidery') == false),
+
                         Toggle::make('has_sublimate')->inline()
                             ->label('Agregar sublimado?')
                             ->reactive(),
+
                         TextInput::make('sublimate')
                             ->label('Texto de sublimado')
-                            ->hidden(
-                                fn (Closure $get): bool => $get('has_sublimate') == false
-                            ),
+                            ->hidden(fn(Closure $get): bool => $get('has_sublimate') == false),
+
                         Toggle::make('has_special_size')->inline()
                             ->label('Agregar talla especial?')
                             ->reactive(),
+
                         Textarea::make('special_size')
                             ->label('Detalles de talla especial')
-                            ->hidden(
-                                fn (Closure $get): bool => $get('has_special_size') == false
-                            ),
+                            ->hidden(fn(Closure $get): bool => $get('has_special_size') == false),
+
                     ])
                     ->mutateFormDataUsing(function (array $data): array {
                         $data['colors'] = json_encode($data['colors']);
                         return $data;
                     })
                     ->preloadRecordSelect()
-                    ->after(function (RelationManager $livewire) {  
+                    ->after(function (RelationManager $livewire) {
                         self::$orderService->updateTotal($livewire->ownerRecord->id);
-                        self::$orderService->updateBalance($livewire->ownerRecord->id);                        
+                        self::$orderService->updateBalance($livewire->ownerRecord->id);
                         $livewire->emit('refresh');
                     }),
                 Tables\Actions\CreateAction::make(),
@@ -240,7 +255,7 @@ class ProductsRelationManager extends RelationManager
                         ->icon('heroicon-o-document')
                         ->label("Ver Producto Original")
                         ->action(function (Model $record) {
-                            redirect()->intended('/admin/products/'.str($record->id));
+                            redirect()->intended('/admin/products/' . str($record->id));
                         }),
                     ViewAction::make()
                         ->label("Ver Producto")
@@ -251,7 +266,7 @@ class ProductsRelationManager extends RelationManager
                         ->modalWidth('4xl')
                         ->modalHeading('Editar Producto')
                         ->modalButton('Guardar')
-                        ->form(fn (EditAction $action): array => [
+                        ->form(fn(EditAction $action): array => [
                             TextInput::make('productName')
                                 ->label('Producto')
                                 ->disabled()
@@ -264,26 +279,20 @@ class ProductsRelationManager extends RelationManager
                                 ->default(1),
                             Select::make('size')
                                 ->label('Talla')
-                                ->afterStateHydrated(function (Model|null $record, Select $component) {
-                                    $record == null ? $component->state(null) : $component->state($record->size);
+                                ->options(function (?Model $record) {
+                                    $typeId = $record?->type_id;
+
+                                    if (!$typeId) {
+                                        return [];
+                                    }
+
+                                    return SizeByProduct::where('product_type_id', $typeId)
+                                        ->orderBy('sort_order')
+                                        ->pluck('name', 'name')
+                                        ->toArray();
                                 })
-                                ->options([
-                                    '2' => '2',
-                                    '4' => '4',
-                                    '6' => '6',
-                                    '8' => '8',
-                                    '10' => '10',
-                                    '12' => '12',
-                                    '14' => '14',
-                                    'XS' => 'XS',
-                                    'S' => 'S',
-                                    'M' => 'M',
-                                    'L' => 'L',
-                                    'XL' => 'XL',
-                                    'XXL' => 'XXL',
-                                    '3XL' => '3XL',
-                                    '4XL' => '4XL',
-                                ]),
+                                ->searchable()
+                                ->preload(),
                             Select::make('colors')
                                 ->multiple()
                                 ->label('Color')
@@ -294,7 +303,7 @@ class ProductsRelationManager extends RelationManager
                             TextInput::make('embroidery')
                                 ->label('Texto de Bordado')
                                 ->hidden(
-                                    fn (Closure $get): bool => $get('has_embroidery') == false
+                                    fn(Closure $get): bool => $get('has_embroidery') == false
                                 ),
                             Toggle::make('has_sublimate')->inline()
                                 ->label('Agregar sublimado?')
@@ -302,7 +311,7 @@ class ProductsRelationManager extends RelationManager
                             TextInput::make('sublimate')
                                 ->label('Texto de sublimado')
                                 ->hidden(
-                                    fn (Closure $get): bool => $get('has_sublimate') == false
+                                    fn(Closure $get): bool => $get('has_sublimate') == false
                                 ),
                             Toggle::make('has_special_size')->inline()
                                 ->label('Agregar talla especial?')
@@ -310,7 +319,7 @@ class ProductsRelationManager extends RelationManager
                             Textarea::make('special_size')
                                 ->label('Detalles de talla especial')
                                 ->hidden(
-                                    fn (Closure $get): bool => $get('has_special_size') == false
+                                    fn(Closure $get): bool => $get('has_special_size') == false
                                 ),
                         ])
                         ->mutateFormDataUsing(function (array $data): array {
@@ -319,7 +328,7 @@ class ProductsRelationManager extends RelationManager
                         })
                         ->after(function (RelationManager $livewire) {
                             self::$orderService->updateTotal($livewire->ownerRecord->id);
-                            self::$orderService->updateBalance($livewire->ownerRecord->id); 
+                            self::$orderService->updateBalance($livewire->ownerRecord->id);
                             $livewire->emit('refresh');
                         }),
                     DetachAction::make()
@@ -329,7 +338,7 @@ class ProductsRelationManager extends RelationManager
                         ->modalButton('Si, deseo quitarlo')
                         ->after(function (RelationManager $livewire) {
                             self::$orderService->updateTotal($livewire->ownerRecord->id);
-                            self::$orderService->updateBalance($livewire->ownerRecord->id);                        
+                            self::$orderService->updateBalance($livewire->ownerRecord->id);
                             $livewire->emit('refresh');
                         }),
                 ]),

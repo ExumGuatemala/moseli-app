@@ -20,4 +20,9 @@ class ProductType extends Model
     {
         return $this->hasMany(TypeProductFeature::class);
     }
+
+    public function sizes()
+    {
+        return $this->hasMany(SizeByProduct::class)->orderBy('sort_order');
+    }
 }
