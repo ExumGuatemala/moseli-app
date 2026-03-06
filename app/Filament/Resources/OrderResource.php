@@ -162,6 +162,7 @@ class OrderResource extends Resource
                     ->disabled(),
                 Textarea::make('description')
                     ->label('Descripción')
+                    ->default('')
                     ->columnSpan('full')
                     ->rows(10),
                 SpatieMediaLibraryFileUpload::make('Imagenes')

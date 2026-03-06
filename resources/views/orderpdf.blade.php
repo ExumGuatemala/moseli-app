@@ -1,29 +1,29 @@
 <style>
-table {
-  border-collapse: collapse;
-  width: 100%;
-}
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
 
-th, td {
-  text-align: left;
-  padding: 8px;
-  border: 1px solid black;
-}
+    th,
+    td {
+        text-align: left;
+        padding: 8px;
+        border: 1px solid black;
+    }
 
-th {
-  background-color: #D3E1F1;
-  color: black;
-  text-align: center;
-}
+    th {
+        background-color: #D3E1F1;
+        color: black;
+        text-align: center;
+    }
 
-tr:nth-child(even) {
-  background-color: white;
-}
+    tr:nth-child(even) {
+        background-color: white;
+    }
 
-tr:nth-child(odd) {
-  background-color: white;
-}
-
+    tr:nth-child(odd) {
+        background-color: white;
+    }
 </style>
 
 <div class="flex items-center">
@@ -59,7 +59,7 @@ tr:nth-child(odd) {
 <div>
     <h3>Descripción de la Orden: </h3>
     <p>
-        {{ $order->description ?? "No hay descripción." }} 
+        {{ $order->description ?? "No hay descripción." }}
     </p>
 </div>
 
@@ -81,6 +81,27 @@ tr:nth-child(odd) {
             <td>{{ $product->pivot->quantity }}</td>
             <td>Q.{{ number_format(($product->sale_price * $product->pivot->quantity), 2) }}</td>
         </tr>
+
+        @if(($product->order_parts ?? collect())->count())
+        <tr>
+            <td colspan="5" style="padding: 0;">
+                <table style="width: 100%; border-collapse: collapse; margin: 0;">
+                    <tr>
+                        <th style="width:50%; background:#f2f2f2;">Talla Especial</th>
+                        <th style="width:25%; background:#f2f2f2;">Talla</th>
+                    </tr>
+
+                    @foreach($product->order_parts as $part)
+                    <tr>
+                        <td>{{ $part->productPart->name ?? 'Parte' }}</td>
+                        <td style="text-align:center;">{{ $part->size ?? '-' }}</td>
+                    </tr>
+                    @endforeach
+                </table>
+            </td>
+        </tr>
+        @endif
+
         @endforeach
     </table>
 </div>
@@ -98,5 +119,3 @@ tr:nth-child(odd) {
 </div>
 <div style="background-color: gray; height: 1px; width: 35%;"></div>
 <div style="font-size: 12px; color: gray;">Documento generado el {{ Carbon\Carbon::createFromFormat('Y-m-d H:i:s', Carbon\Carbon::now(), 'UTC')->setTimezone('America/Guatemala') }}</div>
-
-

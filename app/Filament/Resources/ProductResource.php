@@ -21,6 +21,8 @@ use Filament\Forms\Components\Toggle;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Section;
 use App\Filament\Resources\TextInput\Mask;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -49,13 +51,13 @@ class ProductResource extends Resource
                     ->label("Nombre"),
                 TextInput::make('sale_price')
                     ->required()
-                    ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2))
+                    ->mask(fn(TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2))
                     ->label("Precio de Venta"),
                 TextInput::make('existence')
                     ->numeric()
                     ->label("Existencia")
                     ->afterStateHydrated(function (TextInput $component, $state) {
-                        if(!$state){
+                        if (!$state) {
                             $component->state(1);
                         }
                     }),
@@ -81,6 +83,23 @@ class ProductResource extends Resource
                     ->enableReordering()
                     ->enableOpen()
                     ->visibility('public'),
+                Section::make('Tallas del producto')
+                    ->label('Tallas de producto')
+                    ->schema([
+                        Repeater::make('parts')
+                            ->relationship('parts')
+                            ->label('Tallas')
+                            ->schema([
+                                TextInput::make('name')
+                                    ->label('Nombre')
+                                    ->required()
+                                    ->maxLength(255),
+                            ])
+                            ->defaultItems(0)
+                            ->columns(1)
+                            ->columnSpan('full'),
+                    ])
+                    ->columnSpan('full'),
             ]);
     }
 
@@ -106,15 +125,15 @@ class ProductResource extends Resource
                 SelectFilter::make('type_id')
                     ->label('Talla')
                     ->multiple()
-                    ->relationship('type','name'),
-                ])
+                    ->relationship('type', 'name'),
+            ])
             ->actions([
                 Tables\Actions\ViewAction::make()
                     ->label('Ver')
                     ->modalHeading('Ver Detalles de Producto'),
                 Tables\Actions\EditAction::make()
                     ->label('Editar')
-                    ->modalHeading('Editar Producto')  
+                    ->modalHeading('Editar Producto')
                     ->modalButton('Guardar Cambios'),
                 Tables\Actions\DeleteAction::make()
                     ->label('Eliminar')->modalHeading('Eliminar Producto')
@@ -125,14 +144,14 @@ class ProductResource extends Resource
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
-    
+
     public static function getRelations(): array
     {
         return [
             //
         ];
     }
-    
+
     public static function getPages(): array
     {
         return [
@@ -141,5 +160,5 @@ class ProductResource extends Resource
             'view' => Pages\ViewProduct::route('/{record}'),
             'edit' => Pages\EditProduct::route('/{record}/edit'),
         ];
-    }    
+    }
 }
