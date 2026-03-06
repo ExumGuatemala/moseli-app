@@ -527,7 +527,7 @@ class ProductsRelationManager extends RelationManager
                                 ->orderable(false)
                                 ->hidden(fn(Closure $get): bool => $get('has_special_size') == false)
                                 ->disableItemDeletion()
-                                ->disableItemDeletion()
+                                ->disableItemCreation()
                                 ->columnSpan('full'),
 
                             Select::make('colors')
