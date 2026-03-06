@@ -34,7 +34,8 @@ class ProductTypeResource extends Resource
                 TextInput::make('name')
                     ->required()
                     ->label('Nombre')
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->columnSpanFull(),
 
                 Repeater::make('features')
                 ->label('Detalles de tipo de producto')
@@ -47,7 +48,8 @@ class ProductTypeResource extends Resource
                         TextInput::make('size')
                             ->label('Tamaño'),
                     ])
-                    ->columns(1),
+                    ->columns(2)
+                    ->columnSpanFull()
                     // ->addActionLabel('Add Feature')
             ]);
     }

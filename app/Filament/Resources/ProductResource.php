@@ -97,6 +97,7 @@ class ProductResource extends Resource
                     ->label('Detalles de producto')
                     ->disableItemDeletion()
                     ->disableItemCreation()
+                    ->columns(2)
                     ->schema([
                         TextInput::make('name')
                             ->label('Nombre')
@@ -105,7 +106,7 @@ class ProductResource extends Resource
                         TextInput::make('size')
                             ->label('Tamaño'),
                     ])
-                    ->columns(2)
+                    ->columnSpanFull()
                     ->defaultItems(0)
             ]);
     }
