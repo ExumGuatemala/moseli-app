@@ -160,14 +160,13 @@ class ProductsRelationManager extends RelationManager
                 TextColumn::make("size")->label("Talla"),
 
                 TextColumn::make('parts_summary')
-                    ->label('Partes')
+                    ->label('Tallas Especiales')
                     ->getStateUsing(function (Model $record): string {
-                        $orderProductId = $record->pivot->id ?? null;
+                        $orderProductId = $record->id ?? null;
                         if (!$orderProductId) return '';
 
                         $rows = OrderProductPart::query()
                             ->where('order_product_id', $orderProductId)
-                            ->with('productPart:id,name')
                             ->get();
 
                         return $rows
