@@ -46,7 +46,7 @@ class ProductTypeResource extends Resource
                 TextInput::make('name')
                     ->required()
                     ->label('Nombre')
-                    ->maxLength(255),
+                    ->columnSpan('full'),
 
                 Repeater::make('features')
                     ->label('Detalles de tipo de producto')
@@ -59,7 +59,7 @@ class ProductTypeResource extends Resource
                         TextInput::make('size')
                             ->label('Tamaño'),
                     ])
-                    ->columns(1),
+                    ->columnSpan('full'),
 
                 Placeholder::make('size_presets')
                     ->label('') // sin label para que no estorbe
@@ -81,9 +81,10 @@ class ProductTypeResource extends Resource
             Esto llena las tallas automáticamente; luego podés reordenarlas.
         </p>
     '))
+                    ->hidden(fn () => request()->route()->getName() == 'filament.resources.product-types.view')
                     ->columnSpan('full'),
                 Repeater::make('sizes')
-                    ->label('Tallas')
+                    ->label('Tallas Por Tipo de Producto')
                     ->relationship()
                     ->schema([
                         TextInput::make('name')->label('Talla')->required(),
@@ -91,7 +92,7 @@ class ProductTypeResource extends Resource
                     ])
                     ->defaultItems(0)
                     ->reorderableWithButtons()           // drag & drop
-                    ->columns(2)
+                    ->columnSpan('full')
             ]);
     }
 
