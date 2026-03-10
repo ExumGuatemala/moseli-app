@@ -439,12 +439,6 @@ class ProductsRelationManager extends RelationManager
                                 ->hidden(
                                     fn(Closure $get): bool => $get('has_sublimate') == false
                                 ),
-
-                            Textarea::make('special_size')
-                                ->label('Detalles de talla especial')
-                                ->hidden(
-                                    fn(Closure $get): bool => $get('has_special_size') == false
-                                ),
                         ]),
 
                     EditAction::make()
