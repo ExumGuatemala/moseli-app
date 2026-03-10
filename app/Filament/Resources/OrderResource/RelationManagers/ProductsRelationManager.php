@@ -324,8 +324,6 @@ class ProductsRelationManager extends RelationManager
                         self::$orderService->updateBalance($orderId);
                         $livewire->emit('refresh');
                     }),
-
-                Tables\Actions\CreateAction::make(),
             ])
             ->actions([
                 ActionGroup::make([
