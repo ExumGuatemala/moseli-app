@@ -104,7 +104,7 @@ class ProductResource extends Resource
                             ->required()
                             ->disabled(), // heredado del tipo
                         TextInput::make('size')
-                            ->label('Tamaño'),
+                            ->label('Valor'),
                     ])
                     ->columnSpanFull()
                     ->defaultItems(0)

@@ -44,11 +44,8 @@ class ProductTypeResource extends Resource
                         TextInput::make('name')
                             ->label('Nombre')
                             ->required(),
-
-                        TextInput::make('size')
-                            ->label('Tamaño'),
                     ])
-                    ->columns(2)
+                    ->columns(1)
                     ->columnSpanFull()
                     // ->addActionLabel('Add Feature')
             ]);
