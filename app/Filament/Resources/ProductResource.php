@@ -25,6 +25,9 @@ use App\Filament\Resources\TextInput\Mask;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 
 class ProductResource extends Resource
 {
@@ -49,22 +52,30 @@ class ProductResource extends Resource
                     ->label("Nombre"),
                 TextInput::make('sale_price')
                     ->required()
-                    ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2))
+                    ->mask(fn(TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2))
                     ->label("Precio de Venta"),
                 TextInput::make('existence')
                     ->numeric()
                     ->label("Existencia")
                     ->afterStateHydrated(function (TextInput $component, $state) {
-                        if(!$state){
+                        if (!$state) {
                             $component->state(1);
                         }
                     }),
-                Select::make('typeId')
+                Select::make('type_id')
                     ->relationship('type', 'name')
                     ->label('Tipo')
-                    ->options(ProductType::all()->pluck('name', 'id'))
                     ->required()
-                    ->searchable(),
+                    ->searchable()
+                    ->reactive()
+                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                        $type = \App\Models\ProductType::with('features')->find($state);
+
+                        $set('features', $type?->features?->map(fn($f) => [
+                            'name' => $f->name,
+                            'size' => $f->size,
+                        ])->values()->all() ?? []);
+                    }),
                 Select::make('institution_id')
                     ->relationship('institution', 'name')
                     ->label('Institución')
@@ -81,6 +92,22 @@ class ProductResource extends Resource
                     ->enableReordering()
                     ->enableOpen()
                     ->visibility('public'),
+                Repeater::make('features')
+                    ->relationship() // Product::features() => ProductFeature
+                    ->label('Detalles de producto')
+                    ->disableItemDeletion()
+                    ->disableItemCreation()
+                    ->columns(2)
+                    ->schema([
+                        TextInput::make('name')
+                            ->label('Nombre')
+                            ->required()
+                            ->disabled(), // heredado del tipo
+                        TextInput::make('size')
+                            ->label('Valor'),
+                    ])
+                    ->columnSpanFull()
+                    ->defaultItems(0)
             ]);
     }
 
@@ -106,15 +133,15 @@ class ProductResource extends Resource
                 SelectFilter::make('type_id')
                     ->label('Talla')
                     ->multiple()
-                    ->relationship('type','name'),
-                ])
+                    ->relationship('type', 'name'),
+            ])
             ->actions([
                 Tables\Actions\ViewAction::make()
                     ->label('Ver')
                     ->modalHeading('Ver Detalles de Producto'),
                 Tables\Actions\EditAction::make()
                     ->label('Editar')
-                    ->modalHeading('Editar Producto')  
+                    ->modalHeading('Editar Producto')
                     ->modalButton('Guardar Cambios'),
                 Tables\Actions\DeleteAction::make()
                     ->label('Eliminar')->modalHeading('Eliminar Producto')
@@ -125,14 +152,14 @@ class ProductResource extends Resource
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
-    
+
     public static function getRelations(): array
     {
         return [
             //
         ];
     }
-    
+
     public static function getPages(): array
     {
         return [
@@ -141,5 +168,5 @@ class ProductResource extends Resource
             'view' => Pages\ViewProduct::route('/{record}'),
             'edit' => Pages\EditProduct::route('/{record}/edit'),
         ];
-    }    
+    }
 }
