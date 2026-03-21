@@ -36,4 +36,12 @@ class Client extends Model
     {
         return $this->hasMany(Order::class);
     }
+
+    /**
+     * Get all the products for the client.
+     */
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
 }

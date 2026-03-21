@@ -9,6 +9,7 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Image\Manipulations;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use App\Models\Client;
 
 class Product extends Model implements HasMedia
 {
@@ -20,6 +21,7 @@ class Product extends Model implements HasMedia
         'order',
         'sale_price',
         'description',
+        'client_id',
         'institution_id',
     ];
 
@@ -53,6 +55,14 @@ class Product extends Model implements HasMedia
     public function institution()
     {
         return $this->belongsTo(Institution::class);
+    }
+
+    /**
+     * Get the client that owns the Product
+     */
+    public function client()
+    {
+        return $this->belongsTo(Client::class);
     }
 
     public function registerMediaConversions(Media $media = null): void
