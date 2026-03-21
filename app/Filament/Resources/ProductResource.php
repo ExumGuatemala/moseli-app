@@ -14,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
@@ -104,7 +105,8 @@ class ProductResource extends Resource
                             ->required()
                             ->disabled(), // heredado del tipo
                         TextInput::make('size')
-                            ->label('Tamaño'),
+                            ->label('Valor')
+                            ->required()
                     ])
                     ->columnSpanFull()
                     ->defaultItems(0)
@@ -134,6 +136,7 @@ class ProductResource extends Resource
                     ->label('Talla')
                     ->multiple()
                     ->relationship('type', 'name'),
+                TrashedFilter::make(),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()
@@ -145,11 +148,22 @@ class ProductResource extends Resource
                     ->modalButton('Guardar Cambios'),
                 Tables\Actions\DeleteAction::make()
                     ->label('Eliminar')->modalHeading('Eliminar Producto')
-                    ->modalSubheading('Esta accion es permanente, desea continuar con la eliminación?')
+                    ->modalSubheading('El producto será enviado a la papelera. Puede restaurarlo después.')
                     ->modalButton('Si, deseo eliminarlo'),
+                Tables\Actions\RestoreAction::make()
+                    ->label('Restaurar'),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\RestoreBulkAction::make(),
+            ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
             ]);
     }
 

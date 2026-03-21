@@ -10,6 +10,7 @@ use Filament\Resources\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\TrashedFilter;
 
 use Filament\Resources\RelationManagers\RelationManager;
 use Illuminate\Database\Eloquent\Model;
@@ -73,6 +74,7 @@ class OrdersRelationManager extends RelationManager
                         Forms\Components\DatePicker::make('created_until')
                             ->label("Hasta"),
                     ]),
+                TrashedFilter::make(),
             ])
             ->headerActions([
                 //
@@ -86,6 +88,15 @@ class OrdersRelationManager extends RelationManager
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\RestoreBulkAction::make(),
             ]);
-    }    
+    }
+
+    protected function getTableQuery(): Builder
+    {
+        return parent::getTableQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\OrderResource\RelationManagers;
 
+use App\Support\RelationManagerActivity;
 use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -9,7 +10,10 @@ use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Services\OrderService;
 
@@ -53,7 +57,7 @@ class PaymentsRelationManager extends RelationManager
 
             ])
             ->filters([
-                //
+                TrashedFilter::make(),
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
@@ -64,16 +68,50 @@ class PaymentsRelationManager extends RelationManager
                     $data['order_id'] = $livewire->ownerRecord->id;
                     return $data;
                 })
-                ->after(function (RelationManager $livewire) {
+                ->after(function (RelationManager $livewire, ?Model $record) {
                     self::$orderService->updateBalance($livewire->ownerRecord->id); 
-                        $livewire->emit('refresh');
-                    }),
+                    if ($record) {
+                        RelationManagerActivity::log('Creado', $livewire->ownerRecord, 'payments', $record, [
+                            'amount' => $record->amount,
+                        ]);
+                    }
+                    $livewire->emit('refresh');
+                }),
             ])
             ->actions([
 
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\DeleteBulkAction::make()
+                    ->after(function (RelationManager $livewire, ?Collection $records) {
+                        foreach ($records ?? collect() as $record) {
+                            RelationManagerActivity::log('Eliminado', $livewire->ownerRecord, 'payments', $record, [
+                                'amount' => $record->amount,
+                            ]);
+                        }
+
+                        self::$orderService->updateBalance($livewire->ownerRecord->id);
+                        $livewire->emit('refresh');
+                    }),
+                Tables\Actions\RestoreBulkAction::make()
+                    ->after(function (RelationManager $livewire, ?Collection $records) {
+                        foreach ($records ?? collect() as $record) {
+                            RelationManagerActivity::log('Restaurado', $livewire->ownerRecord, 'payments', $record, [
+                                'amount' => $record->amount,
+                            ]);
+                        }
+
+                        self::$orderService->updateBalance($livewire->ownerRecord->id);
+                        $livewire->emit('refresh');
+                    }),
+            ]);
+    }
+
+    protected function getTableQuery(): Builder
+    {
+        return parent::getTableQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
             ]);
     }
 }

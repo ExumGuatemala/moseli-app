@@ -24,6 +24,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Tables\Actions\Action;
@@ -220,6 +221,7 @@ class OrderResource extends Resource
                     ->options(
                         OrderState::get()->pluck('name', 'id')
                     ),
+                TrashedFilter::make(),
             ])
             ->actions([
                 Action::make("nextStatus")
@@ -238,9 +240,19 @@ class OrderResource extends Resource
                 Tables\Actions\ViewAction::make()->label('Ver'),
                 Tables\Actions\EditAction::make()->label('Editar'),
                 Tables\Actions\DeleteAction::make()->label('Eliminar'),
+                Tables\Actions\RestoreAction::make()->label('Restaurar'),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\RestoreBulkAction::make(),
+            ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
             ]);
     }
 

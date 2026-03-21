@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\OrderResource\RelationManagers;
 
+use App\Models\Product;
 use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -22,6 +23,8 @@ use Filament\Tables;
 use App\Services\OrderService;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Filters\TrashedFilter;
+use App\Support\RelationManagerActivity;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -156,7 +159,7 @@ class ProductsRelationManager extends RelationManager
                     }),
             ])
             ->filters([
-                //
+                TrashedFilter::make(),
             ])
             ->headerActions([
                 AttachAction::make()
@@ -227,12 +230,32 @@ class ProductsRelationManager extends RelationManager
                         return $data;
                     })
                     ->preloadRecordSelect()
-                    ->after(function (RelationManager $livewire) {  
+                    ->after(function (RelationManager $livewire, array $data) {  
                         self::$orderService->updateTotal($livewire->ownerRecord->id);
-                        self::$orderService->updateBalance($livewire->ownerRecord->id);                        
+                        self::$orderService->updateBalance($livewire->ownerRecord->id);
+
+                        $record = Product::find($data['recordId'] ?? null);
+
+                        if ($record) {
+                            RelationManagerActivity::log('Adjuntado', $livewire->ownerRecord, 'products', $record, [
+                                'quantity' => $data['quantity'] ?? null,
+                                'size' => $data['size'] ?? null,
+                            ]);
+                        }
+
                         $livewire->emit('refresh');
                     }),
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\CreateAction::make()
+                    ->after(function (RelationManager $livewire, ?Model $record) {
+                        self::$orderService->updateTotal($livewire->ownerRecord->id);
+                        self::$orderService->updateBalance($livewire->ownerRecord->id);
+
+                        if ($record) {
+                            RelationManagerActivity::log('Creado', $livewire->ownerRecord, 'products', $record);
+                        }
+
+                        $livewire->emit('refresh');
+                    }),
             ])
             ->actions([
                 ActionGroup::make([
@@ -317,9 +340,13 @@ class ProductsRelationManager extends RelationManager
                             $data['colors'] = json_encode($data['colors']);
                             return $data;
                         })
-                        ->after(function (RelationManager $livewire) {
+                        ->after(function (RelationManager $livewire, Model $record, array $data) {
                             self::$orderService->updateTotal($livewire->ownerRecord->id);
-                            self::$orderService->updateBalance($livewire->ownerRecord->id); 
+                            self::$orderService->updateBalance($livewire->ownerRecord->id);
+                            RelationManagerActivity::log('Actualizado', $livewire->ownerRecord, 'products', $record, [
+                                'quantity' => $data['quantity'] ?? null,
+                                'size' => $data['size'] ?? null,
+                            ]);
                             $livewire->emit('refresh');
                         }),
                     DetachAction::make()
@@ -327,15 +354,25 @@ class ProductsRelationManager extends RelationManager
                         ->modalHeading('Quitar de la orden')
                         ->modalSubheading('Esta accion es permanente, desea continuar con la eliminación?')
                         ->modalButton('Si, deseo quitarlo')
-                        ->after(function (RelationManager $livewire) {
+                        ->after(function (RelationManager $livewire, Model $record) {
                             self::$orderService->updateTotal($livewire->ownerRecord->id);
-                            self::$orderService->updateBalance($livewire->ownerRecord->id);                        
+                            self::$orderService->updateBalance($livewire->ownerRecord->id);
+                            RelationManagerActivity::log('Desvinculado', $livewire->ownerRecord, 'products', $record);
                             $livewire->emit('refresh');
                         }),
                 ]),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\RestoreBulkAction::make(),
+            ]);
+    }
+
+    protected function getTableQuery(): Builder
+    {
+        return parent::getTableQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
             ]);
     }
 }
