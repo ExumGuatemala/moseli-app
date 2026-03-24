@@ -14,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
@@ -25,6 +26,9 @@ use App\Filament\Resources\TextInput\Mask;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 
 class ProductResource extends Resource
 {
@@ -49,22 +53,30 @@ class ProductResource extends Resource
                     ->label("Nombre"),
                 TextInput::make('sale_price')
                     ->required()
-                    ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2))
+                    ->mask(fn(TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2))
                     ->label("Precio de Venta"),
                 TextInput::make('existence')
                     ->numeric()
                     ->label("Existencia")
                     ->afterStateHydrated(function (TextInput $component, $state) {
-                        if(!$state){
+                        if (!$state) {
                             $component->state(1);
                         }
                     }),
-                Select::make('typeId')
+                Select::make('type_id')
                     ->relationship('type', 'name')
                     ->label('Tipo')
-                    ->options(ProductType::all()->pluck('name', 'id'))
                     ->required()
-                    ->searchable(),
+                    ->searchable()
+                    ->reactive()
+                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                        $type = \App\Models\ProductType::with('features')->find($state);
+
+                        $set('features', $type?->features?->map(fn($f) => [
+                            'name' => $f->name,
+                            'size' => $f->size,
+                        ])->values()->all() ?? []);
+                    }),
                 Select::make('institution_id')
                     ->relationship('institution', 'name')
                     ->label('Institución')
@@ -81,6 +93,23 @@ class ProductResource extends Resource
                     ->enableReordering()
                     ->enableOpen()
                     ->visibility('public'),
+                Repeater::make('features')
+                    ->relationship() // Product::features() => ProductFeature
+                    ->label('Detalles de producto')
+                    ->disableItemDeletion()
+                    ->disableItemCreation()
+                    ->columns(2)
+                    ->schema([
+                        TextInput::make('name')
+                            ->label('Nombre')
+                            ->required()
+                            ->disabled(), // heredado del tipo
+                        TextInput::make('size')
+                            ->label('Valor')
+                            ->required()
+                    ])
+                    ->columnSpanFull()
+                    ->defaultItems(0)
             ]);
     }
 
@@ -106,33 +135,45 @@ class ProductResource extends Resource
                 SelectFilter::make('type_id')
                     ->label('Talla')
                     ->multiple()
-                    ->relationship('type','name'),
-                ])
+                    ->relationship('type', 'name'),
+                TrashedFilter::make(),
+            ])
             ->actions([
                 Tables\Actions\ViewAction::make()
                     ->label('Ver')
                     ->modalHeading('Ver Detalles de Producto'),
                 Tables\Actions\EditAction::make()
                     ->label('Editar')
-                    ->modalHeading('Editar Producto')  
+                    ->modalHeading('Editar Producto')
                     ->modalButton('Guardar Cambios'),
                 Tables\Actions\DeleteAction::make()
                     ->label('Eliminar')->modalHeading('Eliminar Producto')
-                    ->modalSubheading('Esta accion es permanente, desea continuar con la eliminación?')
+                    ->modalSubheading('El producto será enviado a la papelera. Puede restaurarlo después.')
                     ->modalButton('Si, deseo eliminarlo'),
+                Tables\Actions\RestoreAction::make()
+                    ->label('Restaurar'),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\RestoreBulkAction::make(),
             ]);
     }
-    
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
+    }
+
     public static function getRelations(): array
     {
         return [
             //
         ];
     }
-    
+
     public static function getPages(): array
     {
         return [
@@ -141,5 +182,5 @@ class ProductResource extends Resource
             'view' => Pages\ViewProduct::route('/{record}'),
             'edit' => Pages\EditProduct::route('/{record}/edit'),
         ];
-    }    
+    }
 }
