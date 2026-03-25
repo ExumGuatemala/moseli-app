@@ -21,7 +21,7 @@ class OrderService
         $this->orderStateRepository = new OrderStateRepository(new OrderState);
     }
 
-    public function updateTotal($orderId): string
+    public function updateTotal($orderId, bool $persist = true): string
     {
         $order = $this->orderRepository->get($orderId)[0];
         $order->total = 0;
@@ -30,7 +30,9 @@ class OrderService
         {
             $order->total += $product->sale_price * $product->pivot->quantity;
         }
-        $order->save();
+        if ($persist) {
+            $order->save();
+        }
         // self::updateBalance($orderId);
         return strval($order->total);
     }
