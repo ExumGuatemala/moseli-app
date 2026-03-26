@@ -29,6 +29,8 @@ use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use Filament\Forms\ComponentContainer;
+use App\Support\ResourceViewActivity;
 
 class ProductResource extends Resource
 {
@@ -141,6 +143,10 @@ class ProductResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make()
                     ->label('Ver')
+                    ->mountUsing(function (ComponentContainer $form, Model $record): void {
+                        ResourceViewActivity::log(static::class, $record);
+                        $form->fill($record->attributesToArray());
+                    })
                     ->modalHeading('Ver Detalles de Producto'),
                 Tables\Actions\EditAction::make()
                     ->label('Editar')
