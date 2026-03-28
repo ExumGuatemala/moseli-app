@@ -50,21 +50,7 @@ class ProductResource extends Resource
             ->schema([
                 TextInput::make('name')
                     ->required()
-                    ->maxLength(255)
-                    ->columnSpan('full')
                     ->label("Nombre"),
-                TextInput::make('sale_price')
-                    ->required()
-                    ->mask(fn(TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2))
-                    ->label("Precio de Venta"),
-                TextInput::make('existence')
-                    ->numeric()
-                    ->label("Existencia")
-                    ->afterStateHydrated(function (TextInput $component, $state) {
-                        if (!$state) {
-                            $component->state(1);
-                        }
-                    }),
                 Select::make('type_id')
                     ->relationship('type', 'name')
                     ->label('Tipo')
@@ -78,7 +64,23 @@ class ProductResource extends Resource
                             'name' => $f->name,
                             'size' => $f->size,
                         ])->values()->all() ?? []);
+
+                        $base_price = $type?->base_price ?? 0;
+                        $set('sale_price', $base_price);
                     }),
+                TextInput::make('sale_price')
+                    ->required()
+                    ->mask(fn(TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2))
+                    ->label("Precio de Venta"),
+                TextInput::make('existence')
+                    ->numeric()
+                    ->label("Existencia")
+                    ->afterStateHydrated(function (TextInput $component, $state) {
+                        if (!$state) {
+                            $component->state(1);
+                        }
+                    }),
+                
                 Select::make('institution_id')
                     ->relationship('institution', 'name')
                     ->label('Institución')
