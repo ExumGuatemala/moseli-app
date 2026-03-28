@@ -37,7 +37,11 @@ class ProductTypeResource extends Resource
                     ->label('Nombre')
                     ->maxLength(255)
                     ->columnSpanFull(),
-
+                TextInput::make('base_price')
+                    ->label('Precio Base')
+                    ->numeric()
+                    ->prefix('Q')
+                    ->columnSpanFull(),
                 Repeater::make('features')
                 ->label('Detalles de tipo de producto')
                     ->relationship()
