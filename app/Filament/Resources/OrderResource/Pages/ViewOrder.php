@@ -7,7 +7,7 @@ use Filament\Pages\Actions\EditAction;
 use Filament\Pages\Actions\Action;
 use Filament\Resources\Pages\ViewRecord;
 use App\Services\OrderService;
-use Illuminate\Database\Eloquent\Model;
+use App\Support\ResourceViewActivity;
 
 class ViewOrder extends ViewRecord
 {
@@ -17,6 +17,13 @@ class ViewOrder extends ViewRecord
 
     public function __construct() {
         static::$orderService = new OrderService;
+    }
+
+    public function mount($record): void
+    {
+        parent::mount($record);
+
+        ResourceViewActivity::log(static::$resource, $this->record);
     }
 
     public function hasCombinedRelationManagerTabsWithForm(): bool
@@ -31,7 +38,7 @@ class ViewOrder extends ViewRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $data['total'] = self::$orderService->updateTotal($data['id']);
+        $data['total'] = self::$orderService->updateTotal($data['id'], false);
         return $data;
     }
 

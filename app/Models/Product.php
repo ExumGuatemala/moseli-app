@@ -46,7 +46,7 @@ class Product extends Model implements HasMedia
      */
     public function orders()
     {
-        return $this->belongsToMany(Order::class, 'orders_products', 'product_id', 'order_id')->withPivot('id','quantity', 'sublimate','size','embroidery','has_embroidery','has_sublimate','special_size','has_special_size','colors');
+        return $this->belongsToMany(Order::class, 'orders_products', 'product_id', 'order_id')->withPivot('id', 'quantity', 'sublimate', 'size', 'embroidery', 'has_embroidery', 'has_sublimate', 'special_size', 'has_special_size', 'colors');
     }
 
     /**
@@ -71,5 +71,10 @@ class Product extends Model implements HasMedia
             ->addMediaConversion('preview')
             ->fit(Manipulations::FIT_CROP, 300, 300)
             ->nonQueued();
+}
+
+    public function features()
+    {
+        return $this->hasMany(ProductFeature::class);
     }
 }

@@ -16,6 +16,7 @@ use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
@@ -27,6 +28,11 @@ use App\Filament\Resources\TextInput\Mask;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Filament\Forms\ComponentContainer;
+use App\Support\ResourceViewActivity;
 
 class ProductResource extends Resource
 {
@@ -43,57 +49,74 @@ class ProductResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema(static::getProductFormSchema());
-    }
+            ->schema([
+                TextInput::make('name')
+                    ->required()
+                    ->label("Nombre"),
+                Select::make('type_id')
+                    ->relationship('type', 'name')
+                    ->label('Tipo')
+                    ->required()
+                    ->searchable()
+                    ->reactive()
+                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                        $type = \App\Models\ProductType::with('features')->find($state);
 
-    public static function getProductFormSchema(): array
-    {
-        return [
-            TextInput::make('name')
-                ->required()
-                ->maxLength(255)
-                ->columnSpan('full')
-                ->label("Nombre"),
-            TextInput::make('sale_price')
-                ->required()
-                ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2))
-                ->label("Precio de Venta"),
-            TextInput::make('existence')
-                ->numeric()
-                ->label("Existencia")
-                ->afterStateHydrated(function (TextInput $component, $state) {
-                    if(!$state){
-                        $component->state(1);
-                    }
-                }),
-            Select::make('typeId')
-                ->relationship('type', 'name')
-                ->label('Tipo')
-                ->options(ProductType::all()->pluck('name', 'id'))
-                ->required()
-                ->searchable(),
-            Select::make('client_id')
-                ->relationship('client', 'name')
-                ->label('Cliente')
-                ->options(Client::query()->orderBy('name')->pluck('name', 'id'))
-                ->searchable(),
-            Select::make('institution_id')
-                ->relationship('institution', 'name')
-                ->label('Institución')
-                ->options(Institution::query()->orderBy('name')->pluck('name', 'id'))
-                ->searchable(),
-            Textarea::make('description')
-                ->label('Descripción')
-                ->columnSpan('full')
-                ->rows(3),
-            SpatieMediaLibraryFileUpload::make('Imagenes')
-                ->columnSpan('full')
-                ->multiple()
-                ->conversion('thumb')
-                ->enableReordering()
-                ->enableOpen()
-                ->visibility('public'),
-        ];
+                        $set('features', $type?->features?->map(fn($f) => [
+                            'name' => $f->name,
+                            'size' => $f->size,
+                        ])->values()->all() ?? []);
+
+                        $base_price = $type?->base_price ?? 0;
+                        $set('sale_price', $base_price);
+                    }),
+                TextInput::make('sale_price')
+                    ->required()
+                    ->mask(fn(TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2))
+                    ->label("Precio de Venta"),
+                TextInput::make('existence')
+                    ->numeric()
+                    ->label("Existencia")
+                    ->afterStateHydrated(function (TextInput $component, $state) {
+                        if (!$state) {
+                            $component->state(1);
+                        }
+                    }),
+                
+                Select::make('institution_id')
+                    ->relationship('institution', 'name')
+                    ->label('Institución')
+                    ->options(\App\Models\Institution::all()->pluck('name', 'id'))
+                    ->searchable(),
+                Textarea::make('description')
+                    ->label('Descripción')
+                    ->columnSpan('full')
+                    ->rows(3),
+                SpatieMediaLibraryFileUpload::make('Imagenes')
+                    ->columnSpan('full')
+                    ->multiple()
+                    ->conversion('thumb')
+                    ->enableReordering()
+                    ->enableOpen()
+                    ->visibility('public'),
+                Repeater::make('features')
+                    ->relationship() // Product::features() => ProductFeature
+                    ->label('Detalles de producto')
+                    ->disableItemDeletion()
+                    ->disableItemCreation()
+                    ->columns(2)
+                    ->schema([
+                        TextInput::make('name')
+                            ->label('Nombre')
+                            ->required()
+                            ->disabled(), // heredado del tipo
+                        TextInput::make('size')
+                            ->label('Valor')
+                            ->required()
+                    ])
+                    ->columnSpanFull()
+                    ->defaultItems(0)
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -118,33 +141,49 @@ class ProductResource extends Resource
                 SelectFilter::make('type_id')
                     ->label('Talla')
                     ->multiple()
-                    ->relationship('type','name'),
-                ])
+                    ->relationship('type', 'name'),
+                TrashedFilter::make(),
+            ])
             ->actions([
                 Tables\Actions\ViewAction::make()
                     ->label('Ver')
+                    ->mountUsing(function (ComponentContainer $form, Model $record): void {
+                        ResourceViewActivity::log(static::class, $record);
+                        $form->fill($record->attributesToArray());
+                    })
                     ->modalHeading('Ver Detalles de Producto'),
                 Tables\Actions\EditAction::make()
                     ->label('Editar')
-                    ->modalHeading('Editar Producto')  
+                    ->modalHeading('Editar Producto')
                     ->modalButton('Guardar Cambios'),
                 Tables\Actions\DeleteAction::make()
                     ->label('Eliminar')->modalHeading('Eliminar Producto')
-                    ->modalSubheading('Esta accion es permanente, desea continuar con la eliminación?')
+                    ->modalSubheading('El producto será enviado a la papelera. Puede restaurarlo después.')
                     ->modalButton('Si, deseo eliminarlo'),
+                Tables\Actions\RestoreAction::make()
+                    ->label('Restaurar'),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\RestoreBulkAction::make(),
             ]);
     }
-    
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
+    }
+
     public static function getRelations(): array
     {
         return [
             //
         ];
     }
-    
+
     public static function getPages(): array
     {
         return [
@@ -153,5 +192,5 @@ class ProductResource extends Resource
             'view' => Pages\ViewProduct::route('/{record}'),
             'edit' => Pages\EditProduct::route('/{record}/edit'),
         ];
-    }    
+    }
 }

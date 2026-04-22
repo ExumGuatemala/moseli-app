@@ -9,6 +9,7 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
@@ -113,7 +114,7 @@ class ClientResource extends Resource
                     ->label("Fecha de Creación"),
             ])
             ->filters([
-            //
+                TrashedFilter::make(),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()
@@ -125,11 +126,22 @@ class ClientResource extends Resource
                 Tables\Actions\DeleteAction::make()
                     ->label('Eliminar')
                     ->modalHeading('Eliminar Cliente')
-                    ->modalSubheading('Esta accion es permanente, desea continuar con la eliminación?')
+                    ->modalSubheading('El cliente será enviado a la papelera. Puede restaurarlo después.')
                     ->modalButton('Si, deseo eliminarlo'),
+                Tables\Actions\RestoreAction::make()
+                    ->label('Restaurar'),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\RestoreBulkAction::make(),
+            ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
             ]);
     }
     

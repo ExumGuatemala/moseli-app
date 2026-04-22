@@ -14,5 +14,15 @@ class ProductType extends Model
 
     protected $fillable = [
         'name',
+        'base_price',
     ];
+
+    protected $casts = [
+        'base_price' => 'decimal:2',
+    ];
+
+    public function features()
+    {
+        return $this->hasMany(TypeProductFeature::class);
+    }
 }
