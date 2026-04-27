@@ -48,75 +48,57 @@ class ProductResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                TextInput::make('name')
-                    ->required()
-                    ->label("Nombre"),
-                Select::make('type_id')
-                    ->relationship('type', 'name')
-                    ->label('Tipo')
-                    ->required()
-                    ->searchable()
-                    ->reactive()
-                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                        $type = \App\Models\ProductType::with('features')->find($state);
+        return $form->schema(static::getProductFormSchema());
+    }
 
-                        $set('features', $type?->features?->map(fn($f) => [
-                            'name' => $f->name,
-                            'size' => $f->size,
-                        ])->values()->all() ?? []);
-
-                        $base_price = $type?->base_price ?? 0;
-                        $set('sale_price', $base_price);
-                    }),
-                TextInput::make('sale_price')
-                    ->required()
-                    ->mask(fn(TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2))
-                    ->label("Precio de Venta"),
-                TextInput::make('existence')
-                    ->numeric()
-                    ->label("Existencia")
-                    ->afterStateHydrated(function (TextInput $component, $state) {
-                        if (!$state) {
-                            $component->state(1);
-                        }
-                    }),
-                
-                Select::make('institution_id')
-                    ->relationship('institution', 'name')
-                    ->label('Institución')
-                    ->options(\App\Models\Institution::all()->pluck('name', 'id'))
-                    ->searchable(),
-                Textarea::make('description')
-                    ->label('Descripción')
-                    ->columnSpan('full')
-                    ->rows(3),
-                SpatieMediaLibraryFileUpload::make('Imagenes')
-                    ->columnSpan('full')
-                    ->multiple()
-                    ->conversion('thumb')
-                    ->enableReordering()
-                    ->enableOpen()
-                    ->visibility('public'),
-                Repeater::make('features')
-                    ->relationship() // Product::features() => ProductFeature
-                    ->label('Detalles de producto')
-                    ->disableItemDeletion()
-                    ->disableItemCreation()
-                    ->columns(2)
-                    ->schema([
-                        TextInput::make('name')
-                            ->label('Nombre')
-                            ->required()
-                            ->disabled(), // heredado del tipo
-                        TextInput::make('size')
-                            ->label('Valor')
-                            ->required()
-                    ])
-                    ->columnSpanFull()
-                    ->defaultItems(0)
-            ]);
+    public static function getProductFormSchema(): array
+    {
+        return [
+            TextInput::make('name')
+                ->required()
+                ->maxLength(255)
+                ->columnSpan('full')
+                ->label("Nombre"),
+            TextInput::make('sale_price')
+                ->required()
+                ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2))
+                ->label("Precio de Venta"),
+            TextInput::make('existence')
+                ->numeric()
+                ->label("Existencia")
+                ->afterStateHydrated(function (TextInput $component, $state) {
+                    if(!$state){
+                        $component->state(1);
+                    }
+                }),
+            Select::make('typeId')
+                ->relationship('type', 'name')
+                ->label('Tipo')
+                ->options(ProductType::all()->pluck('name', 'id'))
+                ->required()
+                ->searchable(),
+            Select::make('client_id')
+                ->relationship('client', 'name')
+                ->label('Cliente')
+                ->options(Client::query()->orderBy('name')->pluck('name', 'id'))
+                ->searchable(),
+            Select::make('institution_id')
+                ->relationship('institution', 'name')
+                ->label('Institución')
+                ->options(Institution::query()->orderBy('name')->pluck('name', 'id'))
+                ->searchable(),
+            Textarea::make('description')
+                ->label('Descripción')
+                ->columnSpan('full')
+                ->rows(3),
+            SpatieMediaLibraryFileUpload::make('Imagenes')
+                ->columnSpan('full')
+                ->multiple()
+                ->conversion('thumb')
+                ->enableReordering()
+                ->enableOpen()
+                ->visibility('public'),
+        ];
     }
 
     public static function table(Table $table): Table

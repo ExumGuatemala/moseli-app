@@ -124,17 +124,6 @@ class ProductsRelationManager extends RelationManager
                         $livewire->emit('refresh');
                     }),
                 Tables\Actions\CreateAction::make()
-                    ->after(function (RelationManager $livewire, ?Model $record) {
-                        self::$orderService->updateTotal($livewire->ownerRecord->id);
-                        self::$orderService->updateBalance($livewire->ownerRecord->id);
-
-                        if ($record) {
-                            RelationManagerActivity::log('Creado', $livewire->ownerRecord, 'products', $record);
-                        }
-
-                        $livewire->emit('refresh');
-                    }),
-                Tables\Actions\CreateAction::make()
                     ->label('Crear Producto')
                     ->slideOver()
                     ->modalWidth('4xl')
